@@ -57,6 +57,7 @@ public Optional<User> findById(Integer id){
 
     public UserWithoutPassDTO login(UserLoginDTO loginDTO) {
             User u = userRepository.findByUsername(loginDTO.getUsername());
+
         if (u == null) {
             throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
         } else {
