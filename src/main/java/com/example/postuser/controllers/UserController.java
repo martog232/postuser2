@@ -19,8 +19,7 @@ import java.util.Optional;
 @RestController
 public class UserController {
 
-
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -30,6 +29,7 @@ public class UserController {
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public RegisterResponseUserDTO register(@RequestBody RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
+
         return userService.addUser(userDTO);
     }
 
@@ -37,11 +37,13 @@ public class UserController {
     public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO=userService.login(loginDTO);
         ses.setAttribute("LoggedUser",responseDTO.getId() );
+
         return responseDTO;
     }
 
     @GetMapping(value = "/users",produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<UserWithoutPassDTO> getAll(){
+
         return userService.getAllUsers();
 
     }

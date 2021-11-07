@@ -22,20 +22,23 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserService(UserRepository userRepository){
+        this.userRepository=userRepository;
+    }
+
     public RegisterResponseUserDTO addUser(RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
-    if(!(userDTO.getPassword().equals(userDTO.getConfirmPassword()))){
+        if(userRepository.findByEmail(userDTO.getEmail())!=null){
+            throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
+        }
+        if(userRepository.findByUsername(userDTO.getUsername())!=null){
+            throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
+        }
+        else if(!(userDTO.getPassword().equals(userDTO.getConfirmPassword()))){
         throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
-    }
-    if(userRepository.findByEmail(userDTO.getEmail())!=null){
-        throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
-    }
-    if(userRepository.findByUsername(userDTO.getUsername())!=null){
-        throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
-    }
-    //PasswordEncoder encoder=new BCryptPasswordEncoder();
-    //      userDTO.setPassword(encoder.encode(userDTO.getPassword() ));
+        }
         userDTO.setPassword(encryptingPass(userDTO.getPassword()));
     User user=new User(userDTO);
     user=userRepository.save(user);
@@ -43,12 +46,6 @@ public class UserService {
 }
 
 public List<UserWithoutPassDTO> getAllUsers(){
-//    List<User> users=userRepository.findAll();
-//    List<UserWithoutPassDTO> returnUsers=new ArrayList<>();
-//    for(User u:users){
-//        returnUsers.add(new UserWithoutPassDTO(u));
-//    }
-//    return returnUsers;
     return userRepository.findAll().stream().map(UserWithoutPassDTO::new).collect(Collectors.toList());
 }
 
@@ -81,7 +78,5 @@ byte[] bytes=m.digest();
         for (byte aByte : bytes) {
             s.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
         }
-
-        /* Complete hashed password in hexadecimal format */
         return s.toString();}
 }
