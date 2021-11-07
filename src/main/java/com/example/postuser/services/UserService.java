@@ -11,10 +11,10 @@ import com.example.postuser.model.dto.UserWithoutPassDTO;
 import com.example.postuser.model.entities.User;
 import com.example.postuser.model.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-    public RegisterResponseUserDTO addUser(RegisterRequestUserDTO userDTO){
+    public RegisterResponseUserDTO addUser(RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
     if(!(userDTO.getPassword().equals(userDTO.getConfirmPassword()))){
         throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
     }
@@ -34,8 +34,9 @@ public class UserService {
     if(userRepository.findByUsername(userDTO.getUsername())!=null){
         throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
     }
-    PasswordEncoder encoder=new BCryptPasswordEncoder();
-            userDTO.setPassword(encoder.encode(userDTO.getPassword() ));
+    //PasswordEncoder encoder=new BCryptPasswordEncoder();
+    //      userDTO.setPassword(encoder.encode(userDTO.getPassword() ));
+        userDTO.setPassword(encryptingPass(userDTO.getPassword()));
     User user=new User(userDTO);
     user=userRepository.save(user);
     return new RegisterResponseUserDTO(user);
@@ -55,14 +56,16 @@ public Optional<User> findById(Integer id){
     return Optional.ofNullable(userRepository.findById(id).orElseThrow(()->new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
 }
 
-    public UserWithoutPassDTO login(UserLoginDTO loginDTO) {
+    public UserWithoutPassDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException {
             User u = userRepository.findByUsername(loginDTO.getUsername());
 
         if (u == null) {
             throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
         } else {
-            PasswordEncoder encoder = new BCryptPasswordEncoder();
-            if (encoder.matches(loginDTO.getPassword(), u.getPassword())) {
+//            PasswordEncoder encoder = new BCryptPasswordEncoder();
+//            if (encoder.matches(loginDTO.getPassword(), u.getPassword()))
+            if(encryptingPass(loginDTO.getPassword()).equals(encryptingPass(u.getPassword())))
+            {
                 return new UserWithoutPassDTO(u);
             } else {
                 throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
@@ -70,4 +73,15 @@ public Optional<User> findById(Integer id){
             }
         }
     }
+    public String encryptingPass(String password) throws NoSuchAlgorithmException {
+        MessageDigest m=MessageDigest.getInstance("MD5");
+        m.update(password.getBytes());
+byte[] bytes=m.digest();
+        StringBuilder s = new StringBuilder();
+        for (byte aByte : bytes) {
+            s.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        }
+
+        /* Complete hashed password in hexadecimal format */
+        return s.toString();}
 }

@@ -11,25 +11,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 public class UserController {
 
-    @Autowired
+
     private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public RegisterResponseUserDTO register(@RequestBody RegisterRequestUserDTO userDTO){
+    public RegisterResponseUserDTO register(@RequestBody RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
         return userService.addUser(userDTO);
     }
 
     @PostMapping
-    public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO){
+    public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO=userService.login(loginDTO);
-        //todo save to session
+        ses.setAttribute("LoggedUser",responseDTO.getId() );
         return responseDTO;
     }
 
