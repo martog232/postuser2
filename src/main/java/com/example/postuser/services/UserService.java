@@ -10,10 +10,11 @@ import com.example.postuser.model.dto.UserLoginDTO;
 import com.example.postuser.model.dto.UserWithoutPassDTO;
 import com.example.postuser.model.entities.User;
 import com.example.postuser.model.repositories.UserRepository;
+import com.example.postuser.security.EmailValidator;
+import com.example.postuser.security.PasswordEncrypting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +24,14 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+   private final PasswordEncrypting passwordEncrypting;
+   private  final EmailValidator emailValidator;
 
     @Autowired
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, PasswordEncrypting passwordEncrypting, EmailValidator emailValidator){
         this.userRepository=userRepository;
+        this.passwordEncrypting = passwordEncrypting;
+        this.emailValidator = emailValidator;
     }
 
     public RegisterResponseUserDTO addUser(RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
@@ -36,12 +41,16 @@ public class UserService {
         if(userRepository.findByUsername(userDTO.getUsername())!=null){
             throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
         }
-        else if(!(userDTO.getPassword().equals(userDTO.getConfirmPassword()))){
-        throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
+        if(!(userDTO.getPassword().equals(userDTO.getConfirmPassword()))){
+        throw new MethodArgumentNotValidException("passwords are not same");
         }
-        userDTO.setPassword(encryptingPass(userDTO.getPassword()));
+        if(!emailValidator.test(userDTO.getEmail())){
+            throw new MethodArgumentNotValidException("email not valid");
+        }
+        userDTO.setPassword(passwordEncrypting.encryptingPass(userDTO.getPassword()));
     User user=new User(userDTO);
     user=userRepository.save(user);
+
     return new RegisterResponseUserDTO(user);
 }
 
@@ -59,9 +68,7 @@ public Optional<User> findById(Integer id){
         if (u == null) {
             throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
         } else {
-//            PasswordEncoder encoder = new BCryptPasswordEncoder();
-//            if (encoder.matches(loginDTO.getPassword(), u.getPassword()))
-            if(encryptingPass(loginDTO.getPassword()).equals(encryptingPass(u.getPassword())))
+            if(passwordEncrypting.encryptingPass(loginDTO.getPassword()).equals(passwordEncrypting.encryptingPass(u.getPassword())))
             {
                 return new UserWithoutPassDTO(u);
             } else {
@@ -70,13 +77,4 @@ public Optional<User> findById(Integer id){
             }
         }
     }
-    public String encryptingPass(String password) throws NoSuchAlgorithmException {
-        MessageDigest m=MessageDigest.getInstance("MD5");
-        m.update(password.getBytes());
-byte[] bytes=m.digest();
-        StringBuilder s = new StringBuilder();
-        for (byte aByte : bytes) {
-            s.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
-        }
-        return s.toString();}
 }

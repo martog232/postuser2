@@ -26,14 +26,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     public RegisterResponseUserDTO register(@RequestBody RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
 
         return userService.addUser(userDTO);
     }
 
-    @PostMapping
+    @PostMapping("/sign-in")
     public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO=userService.login(loginDTO);
         ses.setAttribute("LoggedUser",responseDTO.getId() );
