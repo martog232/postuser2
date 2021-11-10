@@ -1,13 +1,14 @@
 package com.example.postuser.model.entities;
 
 import com.example.postuser.model.dto.RegisterRequestUserDTO;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -27,19 +28,21 @@ public class User {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name="users_like_posts",
-            joinColumns = {@JoinColumn(name="user_id")},
-            inverseJoinColumns ={ @JoinColumn(name="post_id")}
+            name = "users_like_posts",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "post_id")}
     )
-   private List<Post> likedPosts;
+    private List<Post> likedPosts;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name="users_like_comments",
-            joinColumns = {@JoinColumn(name="user_id")},
-            inverseJoinColumns ={ @JoinColumn(name="comment_id")}
+            name = "users_like_comments",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "comment_id")}
     )
-   private List<Comment> likedComments;
+    private List<Comment> likedComments;
+
+    private boolean isConfirmed;
 
     @Override
     public boolean equals(Object o) {

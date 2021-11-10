@@ -5,11 +5,8 @@ import com.example.postuser.model.entities.Post;
 import com.example.postuser.model.entities.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +17,7 @@ public class RegisterResponseUserDTO {
     private List<Post> posts;
     private List<Post> likedPosts;
     private List<Comment> likedComments;
+    private boolean isConfirmed;
 
      public RegisterResponseUserDTO(User user){
          id=user.getId();
@@ -27,7 +25,8 @@ public class RegisterResponseUserDTO {
          email=user.getEmail();
          posts=user.getPosts();
          likedComments=user.getLikedComments();
-         likedPosts=user.getLikedPosts();
+         likedPosts = user.getLikedPosts();
+         isConfirmed = false;
      }
 
 }
