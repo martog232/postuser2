@@ -44,6 +44,7 @@ public class User {
 
     private boolean isConfirmed;
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

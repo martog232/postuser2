@@ -6,6 +6,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum APIErrorCode {
+    CREDENTIALS_NOT_CORRECT     ("401", "Incorrect credentials", 	"Incorrect email or password "),
+
+    EMAIL_NOT_VALID             ("EX-400-1", "Email is not valid", 	"Email is not valid!"),
+
+    PASSWORDS_NOT_SAME          ("EX-400-1", "Passwords are not same", 	"Confirm pass is not same as password!"),
+
     METHOD_ARG_NOT_VALID 		("EX-400-1", "Method argument not valid", 	"Invalid arguments are passed to the API endpoint!"),
 
     ENTITY_NOT_FOUND            ("EX-404-1", "Entity not found",            "An entity could not be found."),

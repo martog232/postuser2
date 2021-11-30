@@ -2,8 +2,7 @@ package com.example.postuser.controllers.handler;
 
 import com.example.postuser.controllers.error.APIError;
 import com.example.postuser.controllers.error.APIErrorCode;
-import com.example.postuser.exceptions.DuplicateEntityException;
-import com.example.postuser.exceptions.MethodArgumentNotValidException;
+import com.example.postuser.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityNotFoundException;
 
 @RestControllerAdvice
@@ -57,5 +57,35 @@ public class ControllerExceptionHandler {
         APIErrorCode code = APIErrorCode.UNKNOWN_SERVER_EXCEPTION;
 
         return ResponseEntity.status(500).body(new APIError(code.getCode(), code.getMessage(), code.getDescription()));
+    }
+    @ExceptionHandler({PasswordsNotSameException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ResponseEntity<APIError> handleException(PasswordsNotSameException ex){
+        LOGGER.error(STACK_TRACE_LOG, ex);
+
+        APIErrorCode code = APIErrorCode.PASSWORDS_NOT_SAME;
+
+        return ResponseEntity.status(400).body(new APIError(code.getCode(), code.getMessage(), code.getDescription()));
+
+    }
+    @ExceptionHandler({EmailNotValidException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ResponseEntity<APIError> handleException(EmailNotValidException ex){
+        LOGGER.error(STACK_TRACE_LOG, ex);
+
+        APIErrorCode code = APIErrorCode.EMAIL_NOT_VALID;
+
+        return ResponseEntity.status(400).body(new APIError(code.getCode(), code.getMessage(), code.getDescription()));
+
+    }
+    @ExceptionHandler({CredentialsNotCorrectException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ResponseEntity<APIError> handleException(CredentialsNotCorrectException ex){
+        LOGGER.error(STACK_TRACE_LOG, ex);
+
+        APIErrorCode code = APIErrorCode.CREDENTIALS_NOT_CORRECT;
+
+        return ResponseEntity.status(400).body(new APIError(code.getCode(), code.getMessage(), code.getDescription()));
+
     }
 }

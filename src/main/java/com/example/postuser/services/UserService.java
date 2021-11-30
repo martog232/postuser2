@@ -1,19 +1,20 @@
 package com.example.postuser.services;
 
 import com.example.postuser.controllers.error.APIErrorCode;
-import com.example.postuser.exceptions.DuplicateEntityException;
-import com.example.postuser.exceptions.EntityNotFoundException;
-import com.example.postuser.exceptions.MethodArgumentNotValidException;
+import com.example.postuser.exceptions.*;
 import com.example.postuser.model.dto.RegisterRequestUserDTO;
 import com.example.postuser.model.dto.UserLoginDTO;
 import com.example.postuser.model.dto.UserWithoutPassDTO;
 import com.example.postuser.model.entities.Token;
 import com.example.postuser.model.entities.User;
+import com.example.postuser.model.repositories.TokenRepository;
 import com.example.postuser.model.repositories.UserRepository;
 import com.example.postuser.security.EmailSender;
 import com.example.postuser.security.EmailValidator;
 import com.example.postuser.security.PasswordEncrypting;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,10 +23,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@EnableScheduling
 public class UserService {
 
     private final UserRepository userRepository;
@@ -34,19 +37,20 @@ public class UserService {
     private final TokenService tokenService;
     private final EmailSender emailSender;
     private final EmailService emailService;
+    private final TokenRepository tokenRepository;
 
     public String register(RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
-        if (userRepository.findByEmail(userDTO.getEmail()) != null) {
-            throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
-        }
-        if (userRepository.findByUsername(userDTO.getUsername()) != null) {
-            throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
+        if (userRepository.findByEmail(userDTO.getEmail()) != null || userRepository.findByUsername(userDTO.getUsername()) != null) {
+
+            if (userRepository.getIsConfirmedByEmailOrUsername(userDTO.getEmail(), userDTO.getUsername())) {
+                throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
+            }
         }
         if (!(userDTO.getPassword().equals(userDTO.getConfirmPassword()))) {
-            throw new MethodArgumentNotValidException("passwords are not same");
+            throw new PasswordsNotSameException(APIErrorCode.PASSWORDS_NOT_SAME.getDescription());
         }
         if (!emailValidator.test(userDTO.getEmail())) {
-            throw new MethodArgumentNotValidException("email not valid");
+            throw new EmailNotValidException(APIErrorCode.EMAIL_NOT_VALID.getDescription());
         }
 
 
@@ -69,7 +73,6 @@ public class UserService {
         emailSender.send(
                 userDTO.getEmail(),
                 emailService.buildEmail(userDTO.getUsername(), link));
-        //return new RegisterResponseUserDTO(user);
         return stringToken;
     }
 
@@ -83,17 +86,16 @@ public class UserService {
 
     public UserWithoutPassDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException {
         User u = userRepository.findByUsername(loginDTO.getUsername());
-
-        if (u == null) {
-            throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
-        } else {
-            if (passwordEncrypting.encryptingPass(loginDTO.getPassword()).equals(passwordEncrypting.encryptingPass(u.getPassword()))) {
-                return new UserWithoutPassDTO(u);
-            } else {
-                throw new MethodArgumentNotValidException(APIErrorCode.METHOD_ARG_NOT_VALID.getDescription());
-
+        if (u != null) {
+            if (u.isConfirmed()) {
+                if (passwordEncrypting.encryptingPass(loginDTO.getPassword()).equals(passwordEncrypting.encryptingPass(u.getPassword()))) {
+                    System.out.println(u.getUsername() + "logged");
+                    return new UserWithoutPassDTO(u);
+                }
             }
         }
+
+        throw new CredentialsNotCorrectException(APIErrorCode.CREDENTIALS_NOT_CORRECT.getDescription());
     }
 
     @Transactional
@@ -117,4 +119,11 @@ public class UserService {
         userRepository.enableUser(confirmationToken.getOwner().getEmail());
         return "confirmed";
     }
+
+//    @Scheduled(fixedDelay = 15000)
+//    public void deletingNotConfirmedTokens() {
+//        LocalDateTime localDateTime = LocalDateTime.now();
+//        tokenRepository.deleteExpiredToken(localDateTime);
+//    }
+
 }
