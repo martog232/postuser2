@@ -8,6 +8,7 @@ import com.example.postuser.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -33,7 +34,7 @@ public class UserController {
         return userService.confirmToken(token);
     }
 
-    @PostMapping("/sign-in")
+    @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO = userService.login(loginDTO);
         ses.setAttribute("LoggedUser", responseDTO.getId());
@@ -41,15 +42,22 @@ public class UserController {
         return responseDTO;
     }
 
-    @GetMapping(value = "/users",produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<UserWithoutPassDTO> getAll(){
+    @GetMapping(value = "/users", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public List<UserWithoutPassDTO> getAll() {
 
         return userService.getAllUsers();
 
     }
+
     @GetMapping(value = "/users/{id}")
-    public Optional<User> findById(@PathVariable Integer id){
-       return userService.findById(id);
+    public Optional<User> findById(@PathVariable Integer id) {
+        return userService.findById(id);
     }
 
+    @DeleteMapping(value = "/users/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        System.out.println("Valo");
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
 }

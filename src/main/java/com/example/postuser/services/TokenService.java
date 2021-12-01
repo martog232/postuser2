@@ -25,4 +25,8 @@ public class TokenService {
         return tokenRepository.updateConfirmedAt(
                 token, LocalDateTime.now());
     }
+
+    public void deleteByOwnerId(Integer id) {
+        tokenRepository.deleteByOwnerId(id);
+    }
 }

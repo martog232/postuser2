@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -88,8 +88,9 @@ public class UserService {
         User u = userRepository.findByUsername(loginDTO.getUsername());
         if (u != null) {
             if (u.isConfirmed()) {
-                if (passwordEncrypting.encryptingPass(loginDTO.getPassword()).equals(passwordEncrypting.encryptingPass(u.getPassword()))) {
-                    System.out.println(u.getUsername() + "logged");
+                if (passwordEncrypting.encryptingPass(loginDTO.getPassword())
+                        .equals(u.getPassword())) {
+                    System.out.println(u.getUsername() + " logged");
                     return new UserWithoutPassDTO(u);
                 }
             }
@@ -126,4 +127,9 @@ public class UserService {
 //        tokenRepository.deleteExpiredToken(localDateTime);
 //    }
 
+   public void deleteUser(Integer id){
+      User u= findById(id).orElseThrow(()-> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription()));
+        tokenService.deleteByOwnerId(id);
+        userRepository.deleteUserById(u.getId());
+    }
 }
