@@ -1,5 +1,7 @@
-package com.example.postuser.model.dto;
+package com.example.postuser.model.dto.user;
 
+import com.example.postuser.model.dto.post.PostDTO;
+import com.example.postuser.model.dto.post.PostWithoutOwnerDTO;
 import com.example.postuser.model.entities.Comment;
 import com.example.postuser.model.entities.Post;
 import com.example.postuser.model.entities.User;
@@ -17,16 +19,6 @@ public class UserWithoutPassDTO {
     private Integer id;
     private String username;
     private List<PostWithoutOwnerDTO> posts;
-    private List<Post> likedPosts;
+    private List<PostDTO> likedPosts;
     private List<Comment> likedComments;
-
-    public UserWithoutPassDTO(User u){
-        id=u.getId();
-        username=u.getUsername();
-        posts=new ArrayList<>();
-        for(Post p:u.getPosts())
-            posts.add(new PostWithoutOwnerDTO(p));
-        likedPosts=u.getLikedPosts();
-        likedComments=u.getLikedComments();
-    }
 }

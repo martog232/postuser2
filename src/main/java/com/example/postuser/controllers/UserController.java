@@ -1,8 +1,9 @@
 package com.example.postuser.controllers;
 
-import com.example.postuser.model.dto.RegisterRequestUserDTO;
-import com.example.postuser.model.dto.UserLoginDTO;
-import com.example.postuser.model.dto.UserWithoutPassDTO;
+import com.example.postuser.controllers.config.ControllerConfig;
+import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
+import com.example.postuser.model.dto.user.UserLoginDTO;
+import com.example.postuser.model.dto.user.UserWithoutPassDTO;
 import com.example.postuser.model.entities.User;
 import com.example.postuser.services.UserService;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+
 
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
@@ -46,17 +48,15 @@ public class UserController {
     public List<UserWithoutPassDTO> getAll() {
 
         return userService.getAllUsers();
-
     }
 
     @GetMapping(value = "/users/{id}")
-    public Optional<User> findById(@PathVariable Integer id) {
+    public Optional<UserWithoutPassDTO> findById(@PathVariable Integer id) {
         return userService.findById(id);
     }
 
     @DeleteMapping(value = "/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
-        System.out.println("Valo");
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

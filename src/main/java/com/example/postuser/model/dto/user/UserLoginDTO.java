@@ -1,4 +1,4 @@
-package com.example.postuser.model.dto;
+package com.example.postuser.model.dto.user;
 
 import com.example.postuser.model.entities.User;
 import lombok.Data;

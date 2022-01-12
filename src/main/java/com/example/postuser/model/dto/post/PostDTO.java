@@ -1,9 +1,13 @@
-package com.example.postuser.model.dto;
+package com.example.postuser.model.dto.post;
 
+import com.example.postuser.model.dto.user.UserWithNameDTO;
+import com.example.postuser.model.dto.user.UserWithoutPassDTO;
 import com.example.postuser.model.entities.Comment;
 import com.example.postuser.model.entities.Image;
 import com.example.postuser.model.entities.Post;
 import com.example.postuser.model.entities.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,19 +19,8 @@ import java.util.List;
 public class PostDTO {
     private Integer id;
     private String content;
-    private int likes;
     private List<Image> imageList;
-    private UserWithoutPassDTO user;
-    private List<Comment> commentList;
-    private List<User> likers;
-
-    public PostDTO(Post p){
-        id=p.getId();
-        content=p.getContent();
-        likes=p.getLikes();
-        imageList=p.getImageList();
-        commentList=p.getComments();
-        likers=p.getLikers();
-
-    }
+    private List<UserWithNameDTO> likers;
+    private List<Comment> comments;
+    private UserWithNameDTO owner;
 }

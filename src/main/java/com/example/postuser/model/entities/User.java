@@ -1,6 +1,6 @@
 package com.example.postuser.model.entities;
 
-import com.example.postuser.model.dto.RegisterRequestUserDTO;
+import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +45,15 @@ public class User {
     private boolean isConfirmed;
 
 
+    public User(RegisterRequestUserDTO userDTO) {
+        username = userDTO.getUsername();
+        email = userDTO.getEmail();
+        password = userDTO.getPassword();
+        posts = new LinkedList<>();
+        likedPosts = new LinkedList<>();
+        likedComments = new LinkedList<>();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,15 +65,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-
-    public User(RegisterRequestUserDTO userDTO){
-        username = userDTO.getUsername();
-        email=userDTO.getEmail();
-        password=userDTO.getPassword();
-        posts=new LinkedList<>();
-        likedPosts= new LinkedList<>();
-        likedComments=new LinkedList<>();
     }
 }

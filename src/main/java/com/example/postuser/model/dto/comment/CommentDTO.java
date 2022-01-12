@@ -1,4 +1,4 @@
-package com.example.postuser.model.dto;
+package com.example.postuser.model.dto.comment;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

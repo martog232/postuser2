@@ -1,4 +1,4 @@
-package com.example.postuser.model.dto;
+package com.example.postuser.model.dto.user;
 
 import lombok.Data;
 import lombok.Getter;

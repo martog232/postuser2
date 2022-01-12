@@ -1,18 +1,18 @@
 package com.example.postuser.model.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @Entity
-@Table(name="posts")
+@Table(name = "posts")
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,30 +21,38 @@ public class Post {
     private String content;
 
     @OneToMany(mappedBy = "post")
+    @ToString.Exclude
     private List<Image> imageList;
 
     private int likes;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private User owner;
 
     @OneToMany(mappedBy = "post")
+    @ToString.Exclude
     private List<Comment> comments;
 
     @ManyToMany(mappedBy = "likedPosts")
+    @ToString.Exclude
     private List<User> likers;
+
+    public Post() {
+
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Post post = (Post) o;
-        return id == post.id;
+        return id != null && Objects.equals(id, post.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return getClass().hashCode();
     }
 }
