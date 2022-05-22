@@ -2,9 +2,7 @@ package com.example.postuser.controllers;
 
 import com.example.postuser.model.dto.post.PostDTO;
 import com.example.postuser.model.dto.post.PostWithoutOwnerDTO;
-import com.example.postuser.model.dto.user.UserWithNameDTO;
-import com.example.postuser.model.repositories.UserRepository;
-import com.example.postuser.services.PostService;
+import com.example.postuser.services.post.PostService;
 import lombok.AllArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.HttpStatus;
@@ -17,10 +15,10 @@ import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
-
 public class PostController {
 
     private final PostService postService;
+    private SessionManager sessionManager;
 
     @GetMapping(value = "posts", produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PostDTO> getAll() {
@@ -39,7 +37,7 @@ public class PostController {
         if (ses.getAttribute("LoggedUser") == null) {
             throw new AuthenticationException("first log in");
         }
-        return postService.create(postDTO, (Integer) ses.getAttribute("LoggedUser"));
+        return postService.create(postDTO, sessionManager.getLoggedUser(ses));
     }
 
     @PutMapping(value = "posts/{id}")
@@ -47,8 +45,9 @@ public class PostController {
         if (ses.getAttribute("LoggedUser") == null) {
             throw new AuthenticationException("first log in");
         }
-        return postService.like(id, (Integer) ses.getAttribute("LoggedUser"));
+        return postService.like(id, sessionManager.getLoggedUser(ses));
     }
+
 
     //GetMapping paging
     //PutMapping editPost

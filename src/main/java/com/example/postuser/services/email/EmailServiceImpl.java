@@ -1,4 +1,4 @@
-package com.example.postuser.services;
+package com.example.postuser.services.email;
 
 import com.example.postuser.security.EmailSender;
 import lombok.AllArgsConstructor;
@@ -16,10 +16,10 @@ import javax.mail.internet.MimeMessage;
 @Service
 @AllArgsConstructor
 @Configuration
-public class EmailService implements EmailSender {
+public class EmailServiceImpl implements EmailSender, EmailService {
 
     private final static Logger LOGGER = LoggerFactory
-            .getLogger(EmailService.class);
+            .getLogger(EmailServiceImpl.class);
 
     private final JavaMailSender mailSender;
 
@@ -40,7 +40,7 @@ public class EmailService implements EmailSender {
         }
     }
 
-    String buildEmail(String name, String link) {
+    public String buildEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
                 "<span style=\"display:none;font-size:1px;color:#fff;max-height:0\"></span>\n" +

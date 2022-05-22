@@ -1,11 +1,9 @@
 package com.example.postuser.controllers;
 
-import com.example.postuser.controllers.config.ControllerConfig;
 import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import com.example.postuser.model.dto.user.UserLoginDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
-import com.example.postuser.model.entities.User;
-import com.example.postuser.services.UserService;
+import com.example.postuser.services.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +20,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private SessionManager sessionManager;
 
 
     @PostMapping("/sign-up")
@@ -39,9 +38,13 @@ public class UserController {
     @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO = userService.login(loginDTO);
-        ses.setAttribute("LoggedUser", responseDTO.getId());
-
+        sessionManager.loginUser(ses, responseDTO.getId());
         return responseDTO;
+    }
+
+    @PostMapping(value = "/sign-out")
+    public void logout(HttpSession ses) throws NoSuchAlgorithmException {
+        sessionManager.logoutUser(ses);
     }
 
     @GetMapping(value = "/users", produces = {MediaType.APPLICATION_JSON_VALUE})

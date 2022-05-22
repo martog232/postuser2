@@ -23,14 +23,8 @@ public class ImageController {
     private PostRepository postRepository;
     private ImageRepository imageRepository;
 
-    @PutMapping("/posts/{id}/images")
-    public Image upload(@PathVariable int id, @RequestPart(name = "file") MultipartFile file) throws IOException {
-        //create a physical file
-        //write all bytes from the multipartfile
-        //create an Image object
-        //set its url to the path of the phisical file
-        //save object
-        //return object
+    @PostMapping(value = "/posts/{id}/images")
+    public Image upload(@PathVariable int id, @RequestPart MultipartFile file) throws IOException {
 
         File pFile = new File(ASSETS_DIR + File.separator + id + "_" + System.nanoTime() + ".png");
         OutputStream os = new FileOutputStream(pFile);
@@ -53,4 +47,5 @@ public class ImageController {
         File pFile = new File(url);
         return Files.readAllBytes(pFile.toPath());
     }
+
 }

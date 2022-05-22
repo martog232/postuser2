@@ -1,4 +1,4 @@
-package com.example.postuser.services;
+package com.example.postuser.services.user;
 
 import com.example.postuser.controllers.error.APIErrorCode;
 import com.example.postuser.exceptions.*;
@@ -11,6 +11,8 @@ import com.example.postuser.model.repositories.UserRepository;
 import com.example.postuser.security.EmailSender;
 import com.example.postuser.security.EmailValidator;
 import com.example.postuser.security.PasswordEncrypting;
+import com.example.postuser.services.email.EmailService;
+import com.example.postuser.services.token.TokenService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @EnableScheduling
-public class UserService {
+public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final PasswordEncrypting passwordEncrypting;
     private final EmailValidator emailValidator;
@@ -119,12 +121,6 @@ public class UserService {
         userRepository.enableUser(confirmationToken.getOwner().getEmail());
         return "confirmed";
     }
-
-//    @Scheduled(fixedDelay = 15000)
-//    public void deletingNotConfirmedTokens() {
-//        LocalDateTime localDateTime = LocalDateTime.now();
-//        tokenRepository.deleteExpiredToken(localDateTime);
-//    }
 
     public void deleteUser(Integer id) {
         UserWithoutPassDTO u = findById(id).orElseThrow(() -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription()));

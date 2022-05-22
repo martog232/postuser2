@@ -1,4 +1,4 @@
-package com.example.postuser.services;
+package com.example.postuser.services.token;
 
 import com.example.postuser.model.entities.Token;
 import com.example.postuser.model.repositories.TokenRepository;
@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class TokenService {
+public class TokenServiceImpl implements TokenService{
     private final TokenRepository tokenRepository;
 
     public void saveToken(Token token) {
