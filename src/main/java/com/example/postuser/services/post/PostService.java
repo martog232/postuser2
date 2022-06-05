@@ -15,7 +15,7 @@ public interface PostService {
 
     PostDTO create(PostDTO postDTO, Integer loggedUser);
 
-    PostWithoutOwnerDTO like(Integer postId, Integer loggedUserId);
+    PostWithoutOwnerDTO likeAndUnlike(Integer postId, Integer loggedUserId);
 
     Post mapToEntity(PostDTO postDTO);
 

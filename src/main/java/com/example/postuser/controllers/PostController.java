@@ -41,11 +41,11 @@ public class PostController {
     }
 
     @PutMapping(value = "posts/{id}")
-    public PostWithoutOwnerDTO like(@PathVariable(name = "id") int id, HttpSession ses) throws Exception {
+    public PostWithoutOwnerDTO likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses) throws Exception {
         if (ses.getAttribute("LoggedUser") == null) {
             throw new AuthenticationException("first log in");
         }
-        return postService.like(id, sessionManager.getLoggedUser(ses));
+        return postService.likeAndUnlike(id, sessionManager.getLoggedUser(ses));
     }
 
 

@@ -17,12 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
     private final UserService userService;
@@ -41,7 +42,7 @@ public class PostServiceImpl implements PostService{
         postDTO.setComments(new ArrayList<>());
         postDTO.setLikers(new ArrayList<>());
         UserWithNameDTO loggedUserDto = modelMapper.
-                map(userService.findById(loggedUser).get(), UserWithNameDTO.class);
+                map(userService.findById(loggedUser).orElse(null), UserWithNameDTO.class);
         postDTO.setOwner(loggedUserDto);
         Post post = mapToEntity(postDTO);
         post = postRepository.save(post);
@@ -49,13 +50,14 @@ public class PostServiceImpl implements PostService{
     }
 
     @Transactional
-    public PostWithoutOwnerDTO like(Integer postId, Integer loggedUserId) {
+    public PostWithoutOwnerDTO likeAndUnlike(Integer postId, Integer loggedUserId) {
 
-//TODO opravi like
+//TODO opravi like or make it void (returned post is without the new liker)
 
         Optional<PostDTO> postDTO = findById(postId);
         if (postDTO.isPresent()) {
-            User u = userRepository.findById(loggedUserId).get();
+            User u = userRepository.findById(loggedUserId).orElse(null);
+            assert u != null;
             if (u.getLikedPosts().contains(postDTO.get())) {
                 u.getLikedPosts().remove(mapToEntity(postDTO.get()));
 
@@ -64,7 +66,7 @@ public class PostServiceImpl implements PostService{
                 userRepository.save(u);
             }
         } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
-        return new PostWithoutOwnerDTO(postRepository.findById(postId).map(this::mapToDTO).get());
+        return new PostWithoutOwnerDTO(Objects.requireNonNull(postRepository.findById(postId).map(this::mapToDTO).orElse(null)));
     }
 
     public Post mapToEntity(PostDTO postDTO) {
