@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService userService;
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/sign-out")
-    public void logout(HttpSession ses) throws NoSuchAlgorithmException {
+    public void logout(HttpSession ses){
         sessionManager.logoutUser(ses);
     }
 

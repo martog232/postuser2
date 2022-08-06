@@ -24,10 +24,10 @@ public class PostWithoutOwnerDTO {
     private List<UserWithNameDTO> likers;
 
 
-    public PostWithoutOwnerDTO(PostDTO postDTO) {
-        id=postDTO.getId();
-        content=postDTO.getContent();
-        imageList=postDTO.getImageList();
-        likers=postDTO.getLikers();
-    }
+//    public PostWithoutOwnerDTO(PostDTO postDTO) {
+//        id=postDTO.getId();
+//        content=postDTO.getContent();
+//        imageList=postDTO.getImageList();
+//        likers=postDTO.getLikers();
+//    }
 }

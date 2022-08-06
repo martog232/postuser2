@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name="images")
+@Table(name = "images")
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +23,11 @@ public class Image {
 
     private String url;
 
-    @ManyToOne
-    @JoinColumn(name="post_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
     @ToString.Exclude
     @JsonBackReference
-private Post post;
+    private Post post;
 
     @Override
     public boolean equals(Object o) {

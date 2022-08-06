@@ -5,9 +5,11 @@ import com.example.postuser.model.repositories.ImageRepository;
 import com.example.postuser.services.post.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,21 +23,25 @@ public class ImageServiceImpl implements ImageService {
 
     private static final String ASSETS_DIR = new File(".").getAbsolutePath();
 
-    private PostService postService;
-
     private ImageRepository imageRepository;
 
+//    @PostConstruct
+//    @Override
+//    public Image upload(Integer id, MultipartFile file) throws IOException {
+////        File pFile = new File(ASSETS_DIR + File.separator + id + "_" + System.nanoTime() + ".png");
+////        OutputStream os = new FileOutputStream(pFile);
+////        os.write(file.getBytes());
+////        Image image = new Image();
+////        image.setUrl(pFile.getAbsolutePath());
+////        image.setPost(postService.mapToEntity(postService.findById(id).get()));
+////        imageRepository.save(image);
+////        os.close();
+//        return null;
+//    }
+
     @Override
-    public Image upload(Integer id, MultipartFile file) throws IOException {
-        File pFile = new File(ASSETS_DIR + File.separator + id + "_" + System.nanoTime() + ".png");
-        OutputStream os = new FileOutputStream(pFile);
-        os.write(file.getBytes());
-        Image image = new Image();
-        image.setUrl(pFile.getAbsolutePath());
-        image.setPost(postService.mapToEntity(postService.findById(id).get()));
+    public void saveImage(Image image) {
         imageRepository.save(image);
-        os.close();
-        return image;
     }
 
     @Override
@@ -45,4 +51,16 @@ public class ImageServiceImpl implements ImageService {
         File pFile = new File(url);
         return Files.readAllBytes(pFile.toPath());
     }
+
+    @Override
+    public void deleteByPostId(Integer id) {
+        imageRepository.deleteByPostId(id);
+    }
+
+    @Override
+    public void deleteImageFromFolder(Integer id) {
+
+    }
+
+
 }

@@ -3,7 +3,11 @@ package com.example.postuser.services.post;
 import com.example.postuser.model.dto.post.PostDTO;
 import com.example.postuser.model.dto.post.PostWithoutOwnerDTO;
 import com.example.postuser.model.entities.Post;
+import org.springframework.expression.AccessException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,9 +17,11 @@ public interface PostService {
 
     Optional<PostDTO> findById(Integer postId);
 
-    PostDTO create(PostDTO postDTO, Integer loggedUser);
+    PostDTO create(String content, List<MultipartFile> photoList, Integer loggedUser) throws IOException;
 
-    PostWithoutOwnerDTO likeAndUnlike(Integer postId, Integer loggedUserId);
+    PostDTO likeAndUnlike(Integer postId, Integer loggedUserId);
+
+    ResponseEntity<?> deletePost(Integer id,Integer loggedUser) throws AccessException;
 
     Post mapToEntity(PostDTO postDTO);
 
