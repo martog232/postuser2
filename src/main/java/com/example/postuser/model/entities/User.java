@@ -2,17 +2,17 @@ package com.example.postuser.model.entities;
 
 import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User {
@@ -23,8 +23,17 @@ public class User {
     private String email;
     private String password;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL)
     private List<Post> posts;
+
+    @ManyToMany(mappedBy = "followings", cascade = CascadeType.ALL)
+    private List<User> followers;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "users_relations",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "following_id")})
+    private List<User> followings;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -50,6 +59,9 @@ public class User {
         email = userDTO.getEmail();
         password = userDTO.getPassword();
         posts = new LinkedList<>();
+        followers = new LinkedList<>();
+        followings = new LinkedList<>() {
+        };
         likedPosts = new LinkedList<>();
         likedComments = new LinkedList<>();
     }
@@ -59,7 +71,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id;
+        return Objects.equals(id, user.id);
     }
 
     @Override

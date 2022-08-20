@@ -1,9 +1,6 @@
 package com.example.postuser.controllers;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;

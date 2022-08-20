@@ -2,18 +2,12 @@ package com.example.postuser.services.image;
 
 import com.example.postuser.model.entities.Image;
 import com.example.postuser.model.repositories.ImageRepository;
-import com.example.postuser.services.post.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 
 @Service
@@ -33,7 +27,7 @@ public class ImageServiceImpl implements ImageService {
 ////        os.write(file.getBytes());
 ////        Image image = new Image();
 ////        image.setUrl(pFile.getAbsolutePath());
-////        image.setPost(postService.mapToEntity(postService.findById(id).get()));
+////        image.setPost(postService.mapToEntity(postService.getUserWithoutPassDTOById(id).get()));
 ////        imageRepository.save(image);
 ////        os.close();
 //        return null;

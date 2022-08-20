@@ -1,5 +1,7 @@
 package com.example.postuser.model.dto.post;
 
+import com.example.postuser.model.dto.comment.CommentDTO;
+import com.example.postuser.model.dto.image.ImageDTO;
 import com.example.postuser.model.dto.user.UserWithNameDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
 import com.example.postuser.model.entities.Comment;
@@ -21,6 +23,6 @@ public class PostDTO {
     private String content;
     private List<Image> imageList;
     private List<UserWithNameDTO> likers;
-    private List<Comment> comments;
+    private List<CommentDTO> comments;
     private UserWithNameDTO owner;
 }

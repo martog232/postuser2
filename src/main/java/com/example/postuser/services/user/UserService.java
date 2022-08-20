@@ -2,8 +2,10 @@ package com.example.postuser.services.user;
 
 import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import com.example.postuser.model.dto.user.UserLoginDTO;
+import com.example.postuser.model.dto.user.UserWithNameDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
 import com.example.postuser.model.entities.User;
+import org.springframework.http.ResponseEntity;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -14,7 +16,11 @@ public interface UserService {
 
     List<UserWithoutPassDTO> getAllUsers();
 
-    Optional<UserWithoutPassDTO> findById(Integer id);
+    List<UserWithNameDTO> getAllFollowings(Integer loggedUserId);
+
+    Optional<UserWithoutPassDTO> getUserWithoutPassDTOById(Integer id);
+
+    Optional<UserWithNameDTO> getUserWithNameDTOById(Integer id);
 
     UserWithoutPassDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException;
 
@@ -22,9 +28,9 @@ public interface UserService {
 
     void deleteUser(Integer id);
 
-    User mapToEntity(UserWithoutPassDTO dto);
+    UserWithoutPassDTO mapToUserWithoutPassDTO(User entity);
 
-    UserWithoutPassDTO mapToDTO(User entity);
+    UserWithNameDTO mapToUserWithNameDTO(User entity);
 
-    void save(UserWithoutPassDTO u);
+    ResponseEntity<?> followAndUnfollow(Integer id, Integer loggedUserId);
 }

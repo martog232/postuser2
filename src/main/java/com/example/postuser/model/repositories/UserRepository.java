@@ -26,6 +26,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void deleteUserById(Integer id);
 
 
+    @Modifying
     @Query("delete from User u where u.isConfirmed=false ")
     void deleteNotConfirmedUsers();
 
@@ -36,5 +37,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("select u.isConfirmed from User u where u.username=?2")
     Boolean getIsConfirmedByUsername(String username);
+
+
 
 }

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
@@ -14,5 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Modifying
     @Query("delete from Post p where p.id = ?1")
     void deletePostById(Integer id);
+
+    List<Post> getAllByOwnerId(Integer ownerId);
 
 }

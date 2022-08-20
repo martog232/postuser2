@@ -4,6 +4,7 @@ import com.example.postuser.controllers.error.APIErrorCode;
 import com.example.postuser.exceptions.*;
 import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import com.example.postuser.model.dto.user.UserLoginDTO;
+import com.example.postuser.model.dto.user.UserWithNameDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
 import com.example.postuser.model.entities.Token;
 import com.example.postuser.model.entities.User;
@@ -15,6 +16,8 @@ import com.example.postuser.services.email.EmailService;
 import com.example.postuser.services.token.TokenService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,14 +32,14 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @EnableScheduling
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncrypting passwordEncrypting;
     private final EmailValidator emailValidator;
     private final TokenService tokenService;
     private final EmailSender emailSender;
     private final EmailService emailService;
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public String register(RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
         if (userRepository.findByEmail(userDTO.getEmail()) != null || userRepository.findByUsername(userDTO.getUsername()) != null) {
@@ -71,17 +74,32 @@ public class UserServiceImpl implements UserService{
         String link = "http://localhost:8080/confirm?token=" + token.getToken();
         emailSender.send(
                 userDTO.getEmail(),
-                emailService.buildEmail(userDTO.getUsername(), link));
+                emailService.buildSignUpEmail(userDTO.getUsername(), link));
         return stringToken;
     }
 
     public List<UserWithoutPassDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+        // TODO: 20.8.2022 г. fix it
+        List<User> users = userRepository.findAll();
+               List<UserWithoutPassDTO> dtos = users.stream().map(this::mapToUserWithoutPassDTO).collect(Collectors.toList());
+        System.out.println(users);
+        System.out.println(dtos);
+        return dtos;
+    }
+
+    public List<UserWithNameDTO> getAllFollowings(Integer loggedUserId) {
+        UserWithoutPassDTO loggedUser = mapToUserWithoutPassDTO(userRepository.findById(loggedUserId).get());
+        return loggedUser.getFollowings();
     }
 
 
-    public Optional<UserWithoutPassDTO> findById(Integer id) {
-        return Optional.ofNullable(userRepository.findById(id).map(this::mapToDTO).orElseThrow(()
+    public Optional<UserWithoutPassDTO> getUserWithoutPassDTOById(Integer id) {
+        return Optional.ofNullable(userRepository.findById(id).map(this::mapToUserWithoutPassDTO).orElseThrow(()
+                -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
+    }
+
+    public Optional<UserWithNameDTO> getUserWithNameDTOById(Integer id) {
+        return Optional.ofNullable(userRepository.findById(id).map(this::mapToUserWithNameDTO).orElseThrow(()
                 -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
 
@@ -92,11 +110,10 @@ public class UserServiceImpl implements UserService{
                 if (passwordEncrypting.encryptingPass(loginDTO.getPassword())
                         .equals(u.getPassword())) {
                     System.out.println(u.getUsername() + " logged");
-                    return mapToDTO(u);
+                    return mapToUserWithoutPassDTO(u);
                 }
             }
         }
-
         throw new CredentialsNotCorrectException(APIErrorCode.CREDENTIALS_NOT_CORRECT.getDescription());
     }
 
@@ -123,21 +140,32 @@ public class UserServiceImpl implements UserService{
     }
 
     public void deleteUser(Integer id) {
-        UserWithoutPassDTO u = findById(id).orElseThrow(() -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription()));
+        UserWithoutPassDTO u = getUserWithoutPassDTOById(id).orElseThrow(() -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription()));
         tokenService.deleteByOwnerId(id);
         userRepository.deleteUserById(u.getId());
     }
 
-    public User mapToEntity(UserWithoutPassDTO dto) {
-        return modelMapper.map(dto, User.class);
+    @Transactional
+    public ResponseEntity<?> followAndUnfollow(Integer id, Integer loggedUserId) {
+        User userToFollow = userRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription()));
+        User loggedUser = userRepository.findById(loggedUserId).get();
+        List<User> loggedUserFollowings = loggedUser.getFollowings();
+        if (loggedUserFollowings.contains(userToFollow)) loggedUserFollowings.remove(userToFollow);
+        else loggedUserFollowings.add(userToFollow);
+        loggedUser.setFollowings(loggedUserFollowings);
+        userRepository.save(loggedUser);
+        return new ResponseEntity<>(mapToUserWithoutPassDTO(userRepository.findById(loggedUserId).get()), HttpStatus.OK);
     }
 
-    public UserWithoutPassDTO mapToDTO(User entity) {
+    public UserWithoutPassDTO mapToUserWithoutPassDTO(User entity) {
 
         return modelMapper.map(entity, UserWithoutPassDTO.class);
     }
 
-    public void save(UserWithoutPassDTO u) {
-        userRepository.save(mapToEntity(u));
+    public UserWithNameDTO mapToUserWithNameDTO(User entity) {
+
+        return modelMapper.map(entity, UserWithNameDTO.class);
     }
+
 }

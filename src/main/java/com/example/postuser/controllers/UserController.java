@@ -1,10 +1,12 @@
 package com.example.postuser.controllers;
 
+import com.example.postuser.controllers.config.ControllerConfig;
 import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import com.example.postuser.model.dto.user.UserLoginDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
 import com.example.postuser.services.user.UserService;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,24 +46,29 @@ public class UserController {
     }
 
     @PostMapping(value = "/sign-out")
-    public void logout(HttpSession ses){
+    public void logout(HttpSession ses) {
         sessionManager.logoutUser(ses);
     }
 
-    @GetMapping(value = "/users", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ControllerConfig.USERS_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<UserWithoutPassDTO> getAll() {
 
         return userService.getAllUsers();
     }
 
-    @GetMapping(value = "/users/{id}")
+    @GetMapping(value = ControllerConfig.USERS_URL + "/{id}")
     public Optional<UserWithoutPassDTO> findById(@PathVariable Integer id) {
-        return userService.findById(id);
+        return userService.getUserWithoutPassDTOById(id);
     }
 
-    @DeleteMapping(value = "/users/{id}")
+    @DeleteMapping(value = ControllerConfig.USERS_URL + "/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = ControllerConfig.USERS_URL + "/follow/{id}")
+    public ResponseEntity<?> followAndUnfollow(@PathVariable Integer id, HttpSession ses) throws AuthenticationException {
+        return userService.followAndUnfollow(id, sessionManager.getLoggedUser(ses));
     }
 }

@@ -4,8 +4,8 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -13,7 +13,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="comments")
+@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,18 +21,20 @@ public class Comment {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="post_id")
+    @JoinColumn(name = "post_id")
     @ToString.Exclude
     private Post post;
 
     @ManyToMany(mappedBy = "likedComments")
     @ToString.Exclude
-    private Set<User> likers;
+    private List<User> likers;
+
+    private String content;
 
     @Override
     public boolean equals(Object o) {
