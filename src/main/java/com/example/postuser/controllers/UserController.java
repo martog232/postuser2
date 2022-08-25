@@ -1,6 +1,7 @@
 package com.example.postuser.controllers;
 
 import com.example.postuser.controllers.config.ControllerConfig;
+import com.example.postuser.model.dto.user.DoublePassDTO;
 import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import com.example.postuser.model.dto.user.UserLoginDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
@@ -33,11 +34,6 @@ public class UserController {
         return userService.register(userDTO);
     }
 
-    @GetMapping(path = "/confirm")
-    public String confirm(@RequestParam("token") String token) {
-        return userService.confirmToken(token);
-    }
-
     @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO = userService.login(loginDTO);
@@ -48,6 +44,16 @@ public class UserController {
     @PostMapping(value = "/sign-out")
     public void logout(HttpSession ses) {
         sessionManager.logoutUser(ses);
+    }
+
+    @GetMapping(value = "forgot-pass/{email}")
+    public void forgotPass(@PathVariable String email) throws NoSuchAlgorithmException {
+        userService.sendEmailWhenForgotPass(email);
+    }
+
+    @PostMapping(value = "reset-pass", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public void changePass(@RequestParam String token,@RequestBody DoublePassDTO passDTO) throws NoSuchAlgorithmException {
+        userService.changePass(token,passDTO);
     }
 
     @GetMapping(value = ControllerConfig.USERS_URL, produces = {MediaType.APPLICATION_JSON_VALUE})

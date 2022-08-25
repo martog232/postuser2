@@ -2,16 +2,13 @@ package com.example.postuser.services.user;
 
 import com.example.postuser.controllers.error.APIErrorCode;
 import com.example.postuser.exceptions.*;
-import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
-import com.example.postuser.model.dto.user.UserLoginDTO;
-import com.example.postuser.model.dto.user.UserWithNameDTO;
-import com.example.postuser.model.dto.user.UserWithoutPassDTO;
+import com.example.postuser.model.dto.user.*;
 import com.example.postuser.model.entities.Token;
 import com.example.postuser.model.entities.User;
 import com.example.postuser.model.repositories.UserRepository;
 import com.example.postuser.security.EmailSender;
 import com.example.postuser.security.EmailValidator;
-import com.example.postuser.security.PasswordEncrypting;
+import com.example.postuser.security.PasswordAndTokenEncrypting;
 import com.example.postuser.services.email.EmailService;
 import com.example.postuser.services.token.TokenService;
 import lombok.AllArgsConstructor;
@@ -25,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,7 +32,7 @@ import java.util.stream.Collectors;
 @EnableScheduling
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final PasswordEncrypting passwordEncrypting;
+    private final PasswordAndTokenEncrypting passwordTokenEncrypting;
     private final EmailValidator emailValidator;
     private final TokenService tokenService;
     private final EmailSender emailSender;
@@ -56,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        userDTO.setPassword(passwordEncrypting.encryptingPass(userDTO.getPassword()));
+        userDTO.setPassword(passwordTokenEncrypting.encrypting(userDTO.getPassword()));
         User user = new User(userDTO);
         user = userRepository.save(user);
 
@@ -74,14 +72,38 @@ public class UserServiceImpl implements UserService {
         String link = "http://localhost:8080/confirm?token=" + token.getToken();
         emailSender.send(
                 userDTO.getEmail(),
-                emailService.buildSignUpEmail(userDTO.getUsername(), link));
+                emailService.RegBuildSignUpEmail(userDTO.getUsername(), link));
         return stringToken;
+    }
+
+    public String sendEmailWhenForgotPass(String email) throws NoSuchAlgorithmException {
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            String stringToken = UUID.randomUUID().toString();
+            String encryptedToken = passwordTokenEncrypting.encrypting(stringToken);
+            Token token = new Token(
+                    encryptedToken,
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusMinutes(15),
+                    user);
+
+            tokenService.saveToken(token);
+
+            String link = "http://localhost:8080/reset-pass?token=" + stringToken;
+            emailSender.send(
+                    user.getEmail(),
+                    emailService.ResetPassBuildSignUpEmail(user.getUsername(), link));
+            user.setPassword("");
+            userRepository.save(user);
+            return stringToken;
+        }
+        return null;
     }
 
     public List<UserWithoutPassDTO> getAllUsers() {
         // TODO: 20.8.2022 г. fix it
         List<User> users = userRepository.findAll();
-               List<UserWithoutPassDTO> dtos = users.stream().map(this::mapToUserWithoutPassDTO).collect(Collectors.toList());
+        List<UserWithoutPassDTO> dtos = users.stream().map(this::mapToUserWithoutPassDTO).collect(Collectors.toList());
         System.out.println(users);
         System.out.println(dtos);
         return dtos;
@@ -107,7 +129,7 @@ public class UserServiceImpl implements UserService {
         User u = userRepository.findByUsername(loginDTO.getUsername());
         if (u != null) {
             if (u.isConfirmed()) {
-                if (passwordEncrypting.encryptingPass(loginDTO.getPassword())
+                if (passwordTokenEncrypting.encrypting(loginDTO.getPassword())
                         .equals(u.getPassword())) {
                     System.out.println(u.getUsername() + " logged");
                     return mapToUserWithoutPassDTO(u);
@@ -118,9 +140,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public String confirmToken(String token) {
+    public String confirmToken(String token) throws NoSuchAlgorithmException {
+        String encryptedToken = passwordTokenEncrypting.encrypting(token);
         Token confirmationToken = tokenService
-                .getToken(token)
+                .getToken(encryptedToken)
                 .orElseThrow(() ->
                         new IllegalStateException("token not found"));
 
@@ -134,9 +157,37 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("token expired");
         }
 
-        tokenService.setConfirmedAt(token);
+        tokenService.setConfirmedAt(encryptedToken);
         userRepository.enableUser(confirmationToken.getOwner().getEmail());
         return "confirmed";
+    }
+
+    @Transactional
+    public void confirmResetPassToken(String token) throws NoSuchAlgorithmException {
+        String encryptedToken = passwordTokenEncrypting.encrypting(token);
+        if (tokenService.getToken(encryptedToken).isPresent()) {
+            tokenService.setConfirmedAt(encryptedToken);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<String> changePass(String rawStringToken, DoublePassDTO passDTO) throws NoSuchAlgorithmException {
+        if (Objects.equals(passDTO.getNewPass(), passDTO.getConfirmNewPass())) {
+            String encryptedToken = passwordTokenEncrypting.encrypting(rawStringToken);
+            Optional<Token> token = tokenService.getToken(encryptedToken);
+            if (token.isPresent()) {
+                if (token.get().getExpiresAt().isBefore(LocalDateTime.now())) {
+                    throw new IllegalStateException("token expired");
+                }
+                User user = token.get().getOwner();
+                user.setPassword(passwordTokenEncrypting.encrypting(passDTO.getNewPass()));
+                userRepository.save(user);
+                tokenService.deleteByOwnerId(user.getId());
+                return new ResponseEntity<>("Password is changed", HttpStatus.OK);
+            }
+            throw  new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+        }
+        throw new PasswordsNotSameException(APIErrorCode.PASSWORDS_NOT_SAME.getDescription());
     }
 
     public void deleteUser(Integer id) {

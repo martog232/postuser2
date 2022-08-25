@@ -1,9 +1,6 @@
 package com.example.postuser.services.user;
 
-import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
-import com.example.postuser.model.dto.user.UserLoginDTO;
-import com.example.postuser.model.dto.user.UserWithNameDTO;
-import com.example.postuser.model.dto.user.UserWithoutPassDTO;
+import com.example.postuser.model.dto.user.*;
 import com.example.postuser.model.entities.User;
 import org.springframework.http.ResponseEntity;
 
@@ -13,6 +10,8 @@ import java.util.Optional;
 
 public interface UserService {
     String register(RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException;
+
+    String sendEmailWhenForgotPass(String email) throws NoSuchAlgorithmException;
 
     List<UserWithoutPassDTO> getAllUsers();
 
@@ -24,7 +23,7 @@ public interface UserService {
 
     UserWithoutPassDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException;
 
-    String confirmToken(String token);
+    String confirmToken(String token) throws NoSuchAlgorithmException;
 
     void deleteUser(Integer id);
 
@@ -33,4 +32,8 @@ public interface UserService {
     UserWithNameDTO mapToUserWithNameDTO(User entity);
 
     ResponseEntity<?> followAndUnfollow(Integer id, Integer loggedUserId);
+
+    void confirmResetPassToken(String token) throws NoSuchAlgorithmException;
+
+    ResponseEntity<String> changePass(String rawStringToken, DoublePassDTO passDTO) throws NoSuchAlgorithmException;
 }

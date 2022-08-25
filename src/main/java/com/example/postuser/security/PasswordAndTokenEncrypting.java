@@ -6,11 +6,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 @Service
-public class PasswordEncrypting {
+public class PasswordAndTokenEncrypting {
 
-    public String encryptingPass(String password) throws NoSuchAlgorithmException {
+    public String encrypting(String stingToEncrypt) throws NoSuchAlgorithmException {
         MessageDigest m=MessageDigest.getInstance("MD5");
-        m.update(password.getBytes());
+        m.update(stingToEncrypt.getBytes());
         byte[] bytes=m.digest();
         StringBuilder s = new StringBuilder();
         for (byte aByte : bytes) {
