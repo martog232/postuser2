@@ -35,10 +35,10 @@ public class UserController {
     }
 
     @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public UserWithoutPassDTO login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
+    public String login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO = userService.login(loginDTO);
         sessionManager.loginUser(ses, responseDTO.getId());
-        return responseDTO;
+        return responseDTO.getUsername();
     }
 
     @PostMapping(value = "/sign-out")

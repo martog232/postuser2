@@ -39,8 +39,7 @@ public class User {
     @JoinTable(
             name = "users_like_posts",
             joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "post_id")}
-    )
+            inverseJoinColumns = {@JoinColumn(name = "post_id")})
     private List<Post> likedPosts;
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -25,13 +25,13 @@ public class EmailServiceImpl implements EmailSender, EmailService {
 
     @Override
     @Async
-    public void send(String to, String email) {
+    public void send(String to, String email,String subject) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setText(email, true);
             helper.setTo(to);
-            helper.setSubject("Confirm your email");
+            helper.setSubject(subject);
             helper.setFrom("martog232@gmail.com");
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
@@ -165,7 +165,7 @@ public class EmailServiceImpl implements EmailSender, EmailService {
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
                 "      <td style=\"font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:1.315789474;max-width:560px\">\n" +
                 "        \n" +
-                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Hi " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Follow this link to reset your Pokazgram password for your account. </p><blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <a href=\"" + link + "\">Activate Now</a> </p></blockquote>\n Link will expire in 15 minutes. <p>If you didn’t ask to reset your password, you can ignore this email.\n" +
+                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Hi " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Follow this link to reset your Pokazgram password for your account. </p><blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <a href=\"" + link + "\">Change Now</a> </p></blockquote>\n Link will expire in 15 minutes. <p>If you didn’t ask to reset your password, you can ignore this email.\n" +
                 "\n" +
                 "Thanks,\n" +
                 "\n" +

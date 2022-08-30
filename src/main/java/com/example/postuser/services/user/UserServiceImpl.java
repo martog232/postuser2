@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
         String link = "http://localhost:8080/confirm?token=" + token.getToken();
         emailSender.send(
                 userDTO.getEmail(),
-                emailService.RegBuildSignUpEmail(userDTO.getUsername(), link));
+                emailService.RegBuildSignUpEmail(userDTO.getUsername(), link), "Confirm your email");
         return stringToken;
     }
 
@@ -89,10 +89,10 @@ public class UserServiceImpl implements UserService {
 
             tokenService.saveToken(token);
 
-            String link = "http://localhost:8080/reset-pass?token=" + stringToken;
+            String link = "http://localhost:4200/reset-pass/" + stringToken;
             emailSender.send(
                     user.getEmail(),
-                    emailService.ResetPassBuildSignUpEmail(user.getUsername(), link));
+                    emailService.ResetPassBuildSignUpEmail(user.getUsername(), link), "Change your password" );
             user.setPassword("");
             userRepository.save(user);
             return stringToken;
