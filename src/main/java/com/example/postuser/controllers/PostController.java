@@ -1,8 +1,8 @@
 package com.example.postuser.controllers;
 
 import com.example.postuser.controllers.config.ControllerConfig;
-import com.example.postuser.model.dto.comment.CommentDTO;
 import com.example.postuser.model.dto.post.PostDTO;
+import com.example.postuser.services.group.GroupService;
 import com.example.postuser.services.post.PostService;
 import lombok.AllArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -32,28 +31,28 @@ public class PostController {
 
         return postService.getAllPosts();
     }
+
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @RequestMapping("/main-page")
     public List<PostDTO> mainPage(HttpSession ses) throws AuthenticationException {
 
-        return postService.getAllFollowingsPosts(sessionManager.getLoggedUser(ses));
+        return postService.getAllFollowingsPostsInMainPage(sessionManager.getLoggedUser(ses));
     }
 
     @GetMapping(value = "/{post_id}")
-    public Optional<PostDTO> findById(@PathVariable(name = "post_id") Integer postId) {
-        return postService.findById(postId);
+    public ResponseEntity<?> findById(@PathVariable(name = "post_id") Integer postId, HttpSession ses) throws AuthenticationException {
+        return postService.findById(postId, sessionManager.getLoggedUser(ses));
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public PostDTO create(@RequestParam String content, @ModelAttribute List<MultipartFile> photoList, HttpSession ses)
+    public ResponseEntity<?> create(@RequestParam String content, @ModelAttribute List<MultipartFile> photoList, HttpSession ses, @RequestParam(required = false, defaultValue = "0") Integer groupId)
             throws AuthenticationException, IOException {
-
-        return postService.create(content, photoList, sessionManager.getLoggedUser(ses));
+        return postService.create(content, photoList, sessionManager.getLoggedUser(ses), groupId);
     }
 
     @PutMapping(value = "/{id}")
-    public PostDTO likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses) throws Exception {
+    public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses) throws Exception {
 
         return postService.likeAndUnlike(id, sessionManager.getLoggedUser(ses));
     }
@@ -63,15 +62,11 @@ public class PostController {
 
         return postService.deletePost(id, (Integer) ses.getAttribute("LoggedUser"));
     }
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},value = "/add-comment/{id}")
+
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, value = "/add-comment/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public  ResponseEntity<?> addComment(@PathVariable Integer id, @RequestParam String commentContent, HttpSession ses) throws AuthenticationException {
+    public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestParam String commentContent, HttpSession ses) throws AuthenticationException {
 
         return postService.addComment(id, commentContent, sessionManager.getLoggedUser(ses));
     }
-
-    //GetMapping paging
-    //PutMapping editPost
-    //PutMapping likePost
-    //
 }

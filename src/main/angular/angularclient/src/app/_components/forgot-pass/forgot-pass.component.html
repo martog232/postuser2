@@ -15,12 +15,12 @@
                   <!-- Email input -->
                   <div class="d-flex flex-row align-items-center mb-4">
                     <div class="form-outline d-flex justify-content-center flex-fill mb-0">
-                      <input type="email" id="form3Example3c" class="form-control  w-50" placeholder="Email"/>
+                      <input type="email" id="form3Example3c" class="form-control  w-50" placeholder="Email"[(ngModel)]="emptyEmail"/>
                     </div>
                   </div>
                   <!-- Send Email button -->
                   <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                    <button type="button" class="btn btn-primary btn-lg">Send email</button>
+                    <button type="button" class="btn btn-primary btn-lg" (click)="onForgotPass()">Send email</button>
                   </div>
                 </form>
               </div>

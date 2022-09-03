@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { UserService } from 'src/app/_services/user.service';
 
 @Component({
   selector: 'app-forgot-pass',
@@ -7,9 +10,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ForgotPassComponent implements OnInit {
 
-  constructor() { }
+  emptyEmail: string = '';
+
+  sendEmailForgotPassSubscription: Subscription | undefined;
+
+  constructor(private service: UserService, public router: Router) { }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    this.sendEmailForgotPassSubscription?.unsubscribe();
+  }
+
+  onForgotPass(): void {
+    this.sendEmailForgotPassSubscription = this.service.forgotPass(this.emptyEmail).subscribe()
   }
 
 }

@@ -35,7 +35,11 @@ export class UserService {
   }
 
   public register(registerDTO:RegisterRequestUserDTO){
-    return this.http.post(`${this.registerUrl}`,registerDTO)
+    return this.http.post<string>(`${this.registerUrl}`,registerDTO)
+  }
+
+  public forgotPass(email :string){
+    return this.http.post(`${this.forgotPassUrl}`,email)
   }
 
   errorhandler(error: HttpErrorResponse) {

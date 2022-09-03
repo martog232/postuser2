@@ -1,7 +1,11 @@
 package com.example.postuser.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.util.List;
@@ -27,7 +31,13 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
+    @NotNull
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    @ToString.Exclude
+    private Group group;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @ToString.Exclude

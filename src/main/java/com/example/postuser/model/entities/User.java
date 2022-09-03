@@ -1,10 +1,7 @@
 package com.example.postuser.model.entities;
 
 import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
@@ -49,6 +46,14 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "comment_id")}
     )
     private List<Comment> likedComments;
+
+    @ManyToMany(mappedBy = "members")
+    @ToString.Exclude
+    private List<Group> groupMember;
+
+    @ManyToMany(mappedBy = "admins")
+    @ToString.Exclude
+    private List<Group> groupAdmin;
 
     private boolean isConfirmed;
 

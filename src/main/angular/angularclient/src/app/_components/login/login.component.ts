@@ -17,8 +17,6 @@ export class LoginComponent implements OnInit {
   }
 
   loginSubscription: Subscription | undefined;
-  registerSubscription: Subscription | undefined;
-  sendEmailForgotPassSubscription: Subscription | undefined;
 
   constructor(private userService: UserService,public router: Router, private route:ActivatedRoute) { }
 
@@ -28,17 +26,7 @@ export class LoginComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.loginSubscription?.unsubscribe();
-    this.registerSubscription?.unsubscribe();
-    this.sendEmailForgotPassSubscription?.unsubscribe();
   }
-  // onAddBrand(): void {
-  //   this.brandsAddSubscription = this.brandsService.addBrand(this.emptyBrand).subscribe(
-  //     (response: Brand) => {
-  //       console.log(response);
-  //       this.brandsService.getBrands(this.brandFilter);
-  //       this.router.navigate(['/brands'])
-  //     })
-  // }
 
   onLogUser(): void {
     this.loginSubscription = this.userService.login(this.emptyLogin).subscribe(

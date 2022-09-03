@@ -1,15 +1,15 @@
 package com.example.postuser.model.dto.user;
 
 import com.example.postuser.model.dto.comment.CommentDTO;
+import com.example.postuser.model.dto.group.GroupDTO;
 import com.example.postuser.model.dto.post.PostDTO;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.postuser.model.entities.Group;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-@NoArgsConstructor
 @Data
 public class UserWithoutPassDTO {
     private Integer id;
@@ -19,4 +19,6 @@ public class UserWithoutPassDTO {
     private List<UserWithNameDTO> followings;
     private List<PostDTO> likedPosts;
     private List<CommentDTO> likedComments;
+    private List<GroupDTO> groupMember;
+    private List<GroupDTO> groupAdmin;
 }

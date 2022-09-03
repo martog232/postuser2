@@ -3,6 +3,7 @@ package com.example.postuser.services.user;
 import com.example.postuser.controllers.error.APIErrorCode;
 import com.example.postuser.exceptions.*;
 import com.example.postuser.model.dto.user.*;
+import com.example.postuser.model.entities.Group;
 import com.example.postuser.model.entities.Token;
 import com.example.postuser.model.entities.User;
 import com.example.postuser.model.repositories.UserRepository;
@@ -76,7 +77,7 @@ public class UserServiceImpl implements UserService {
         return stringToken;
     }
 
-    public String sendEmailWhenForgotPass(String email) throws NoSuchAlgorithmException {
+    public void sendEmailWhenForgotPass(String email) throws NoSuchAlgorithmException {
         User user = userRepository.findByEmail(email);
         if (user != null) {
             String stringToken = UUID.randomUUID().toString();
@@ -95,9 +96,7 @@ public class UserServiceImpl implements UserService {
                     emailService.ResetPassBuildSignUpEmail(user.getUsername(), link), "Change your password" );
             user.setPassword("");
             userRepository.save(user);
-            return stringToken;
         }
-        return null;
     }
 
     public List<UserWithoutPassDTO> getAllUsers() {
@@ -125,6 +124,11 @@ public class UserServiceImpl implements UserService {
                 -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
 
+    public Optional<User> getUserById(Integer id) {
+        return Optional.ofNullable(userRepository.findById(id).orElseThrow(()
+                -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
+    }
+
     public UserWithoutPassDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException {
         User u = userRepository.findByUsername(loginDTO.getUsername());
         if (u != null) {
@@ -140,10 +144,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public String confirmToken(String token) throws NoSuchAlgorithmException {
-        String encryptedToken = passwordTokenEncrypting.encrypting(token);
+    public String confirmToken(String token) {
+
         Token confirmationToken = tokenService
-                .getToken(encryptedToken)
+                .getToken(token)
                 .orElseThrow(() ->
                         new IllegalStateException("token not found"));
 
@@ -157,7 +161,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("token expired");
         }
 
-        tokenService.setConfirmedAt(encryptedToken);
+        tokenService.setConfirmedAt(token);
         userRepository.enableUser(confirmationToken.getOwner().getEmail());
         return "confirmed";
     }
@@ -188,6 +192,11 @@ public class UserServiceImpl implements UserService {
             throw  new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
         }
         throw new PasswordsNotSameException(APIErrorCode.PASSWORDS_NOT_SAME.getDescription());
+    }
+
+    @Override
+    public List<Group> getAllGroupsYouAreAdminOf(Integer loggedUserId) {
+        return null;
     }
 
     public void deleteUser(Integer id) {

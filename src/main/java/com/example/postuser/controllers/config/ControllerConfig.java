@@ -6,10 +6,10 @@ public class ControllerConfig {
 
     public static final String USERS_URL = "/users";
     public static final String POSTS_URL = "/posts";
-
     public static final String COMMENTS_URL = "/comments";
-
     public static final String IMAGES_URL = "/images";
+    public static final String GROUPS_URL = "/groups";
+
 
 
 }

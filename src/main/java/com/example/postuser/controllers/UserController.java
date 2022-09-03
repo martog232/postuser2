@@ -34,6 +34,11 @@ public class UserController {
         return userService.register(userDTO);
     }
 
+    @GetMapping("/confirm")
+    public String confirmRegistrationToken(@RequestParam String token) throws NoSuchAlgorithmException {
+        return userService.confirmToken(token);
+    }
+
     @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public String login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithoutPassDTO responseDTO = userService.login(loginDTO);
