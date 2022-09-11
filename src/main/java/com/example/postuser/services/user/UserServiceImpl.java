@@ -54,7 +54,6 @@ public class UserServiceImpl implements UserService {
             throw new EmailNotValidException(APIErrorCode.EMAIL_NOT_VALID.getDescription());
         }
 
-
         userDTO.setPassword(passwordTokenEncrypting.encrypting(userDTO.getPassword()));
         User user = new User(userDTO);
         user = userRepository.save(user);
@@ -66,7 +65,6 @@ public class UserServiceImpl implements UserService {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(15),
                 user
-
         );
         tokenService.saveToken(token);
 
@@ -93,14 +91,13 @@ public class UserServiceImpl implements UserService {
             String link = "http://localhost:4200/reset-pass/" + stringToken;
             emailSender.send(
                     user.getEmail(),
-                    emailService.ResetPassBuildSignUpEmail(user.getUsername(), link), "Change your password" );
+                    emailService.ResetPassBuildSignUpEmail(user.getUsername(), link), "Change your password");
             user.setPassword("");
             userRepository.save(user);
         }
     }
 
     public List<UserWithoutPassDTO> getAllUsers() {
-        // TODO: 20.8.2022 г. fix it
         List<User> users = userRepository.findAll();
         List<UserWithoutPassDTO> dtos = users.stream().map(this::mapToUserWithoutPassDTO).collect(Collectors.toList());
         System.out.println(users);
@@ -129,14 +126,14 @@ public class UserServiceImpl implements UserService {
                 -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
 
-    public UserWithoutPassDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException {
+    public UserWithNameDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException {
         User u = userRepository.findByUsername(loginDTO.getUsername());
         if (u != null) {
             if (u.isConfirmed()) {
                 if (passwordTokenEncrypting.encrypting(loginDTO.getPassword())
                         .equals(u.getPassword())) {
                     System.out.println(u.getUsername() + " logged");
-                    return mapToUserWithoutPassDTO(u);
+                    return mapToUserWithNameDTO(u);
                 }
             }
         }
@@ -189,7 +186,7 @@ public class UserServiceImpl implements UserService {
                 tokenService.deleteByOwnerId(user.getId());
                 return new ResponseEntity<>("Password is changed", HttpStatus.OK);
             }
-            throw  new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+            throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
         }
         throw new PasswordsNotSameException(APIErrorCode.PASSWORDS_NOT_SAME.getDescription());
     }

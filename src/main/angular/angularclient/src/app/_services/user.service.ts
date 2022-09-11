@@ -16,6 +16,7 @@ export class UserService {
   private apiServerUrl = environment.apiBaseUrl;
   private loginUrl = this.apiServerUrl + '/sign-in';
   private registerUrl = this.apiServerUrl + '/sign-up';
+  private logoutUrl = this.apiServerUrl + '/sign-out';
   private forgotPassUrl = this.apiServerUrl + '/forgot-pass'
 
 
@@ -32,6 +33,10 @@ export class UserService {
 
   public login(loginDTO:UserLoginDTO){
     return this.http.post<string>(`${this.loginUrl}`,loginDTO)
+  }
+
+  public logout(){
+    return this.http.get(this.logoutUrl)
   }
 
   public register(registerDTO:RegisterRequestUserDTO){

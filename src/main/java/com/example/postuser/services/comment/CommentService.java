@@ -18,4 +18,6 @@ public interface CommentService {
     Optional<CommentDTO> findById(Integer commentId);
 
     CommentDTO createComment(String content, PostDTO postDTO, Integer loggedUser);
+
+    void deleteAllByPost(Integer id);
 }

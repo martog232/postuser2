@@ -14,7 +14,7 @@ export class PostService {
 
   constructor(private http: HttpClient) { }
 
-  public getListOfCountries(): Observable<Post[]> {
+  public getListOfPosts(): Observable<Post[]> {
     return this.http.get<Post[]>(this.apiServerUrl + '/posts');
   }
 

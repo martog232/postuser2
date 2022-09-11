@@ -12,7 +12,6 @@ import com.example.postuser.model.repositories.GroupRepository;
 import com.example.postuser.services.user.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -43,14 +42,15 @@ public class GroupServiceImpl implements GroupService {
         List<GroupDTO> joinedGroups = user.getGroupMember();
 
         for (GroupDTO groupDTO : groupDTOS) {
-            for (GroupDTO joinedGroupDTO:joinedGroups) {
+            for (GroupDTO joinedGroupDTO : joinedGroups) {
 
-            if(!joinedGroupDTO.getId().equals(groupDTO.getId())){
-                NotJoinedGroupDTO notJoinedGroupDTO = mapToNotJoinedGroupDTO(groupDTO);
-                resultList.add(notJoinedGroupDTO);
-            } else resultList.add(groupDTO);
+                if (!joinedGroupDTO.getId().equals(groupDTO.getId())) {
+                    NotJoinedGroupDTO notJoinedGroupDTO = mapToNotJoinedGroupDTO(groupDTO);
+                    resultList.add(notJoinedGroupDTO);
+                } else resultList.add(groupDTO);
 
-        }}
+            }
+        }
         return resultList;
     }
 
@@ -58,11 +58,12 @@ public class GroupServiceImpl implements GroupService {
         Optional<GroupDTO> groupDTO = groupRepository.findById(id).map(this::mapToDTO);
         if (groupDTO.isPresent()) {
             List<GroupDTO> joinedGroups = userService.getUserWithoutPassDTOById(loggedUserId).get().getGroupMember();
-            for (GroupDTO dto:joinedGroups) {
+            for (GroupDTO dto : joinedGroups) {
                 if (dto.getId().equals(groupDTO.get().getId())) {
                     return new ResponseEntity<>(groupDTO.get(), HttpStatus.OK);
+                }
             }
-            } return new ResponseEntity<>(mapToNotJoinedGroupDTO(groupDTO.get()), HttpStatus.OK);
+            return new ResponseEntity<>(mapToNotJoinedGroupDTO(groupDTO.get()), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -148,17 +149,4 @@ public class GroupServiceImpl implements GroupService {
     public NotJoinedGroupDTO mapToNotJoinedGroupDTO(GroupDTO groupDTO) {
         return modelMapper.map(groupDTO, NotJoinedGroupDTO.class);
     }
-
-//    @Override
-//    public GroupDTO createPost(String content, List<MultipartFile> photoList, Integer loggedUser, Integer
-//            groupId) {
-//        return null;
-//    }
-//
-//    @Override
-//    public PostDTO setGroupToPost(Integer groupId, PostDTO postDTO) {
-//        GroupDTO groupDTO = findById(groupId).get();
-//        postDTO.setGroupDTO(groupDTO);
-//        return postDTO;
-//    }
 }

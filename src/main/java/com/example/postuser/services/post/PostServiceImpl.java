@@ -7,6 +7,7 @@ import com.example.postuser.model.dto.group.GroupDTO;
 import com.example.postuser.model.dto.post.PostDTO;
 import com.example.postuser.model.dto.user.UserWithNameDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
+import com.example.postuser.model.entities.Comment;
 import com.example.postuser.model.entities.Image;
 import com.example.postuser.model.entities.Post;
 import com.example.postuser.model.entities.User;
@@ -68,20 +69,40 @@ public class PostServiceImpl implements PostService {
         return ownerPostDtos;
     }
 
+    public ResponseEntity<?> getAllPostsByGroup(Integer groupId, Integer loggedUserId) {
+        UserWithoutPassDTO user = userService.getUserWithoutPassDTOById(loggedUserId).get();
+        List<GroupDTO> joinedGroups = user.getGroupMember();
+        for (GroupDTO joinedGroup : joinedGroups) {
+            if (joinedGroup.getId().equals(groupId)) {
+                return new ResponseEntity<>(postRepository.getAllByGroup(groupId).stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK);
+            }
+
+        }
+        return new ResponseEntity<>("you are not member in this group" + "! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+
     public ResponseEntity<?> findById(Integer postId, int loggedUser) {
         Optional<Post> post = postRepository.findById(postId);
-        if (post.isPresent()){
+        if (post.isPresent()) {
             PostDTO postDTO = mapToDTO(post.get());
             UserWithNameDTO userDTO = userService.getUserWithNameDTOById(loggedUser).get();
-            if (postDTO.getGroup().getMembers().contains(userDTO)){
-                return new ResponseEntity<>(postDTO,HttpStatus.OK);
+            if (postDTO.getGroup() != null) {
+                List<UserWithNameDTO> members = postDTO.getGroup().getMembers();
+                for (UserWithNameDTO member : members) {
+                    if (member.getId().equals(userDTO.getId())) {
+                        return new ResponseEntity<>(postDTO, HttpStatus.OK);
+                    }
+                    return new ResponseEntity<>("you are not member in group " + postDTO.getGroup().getName() +
+                            " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+                }
             }
-            return new ResponseEntity<>("you are not member in group "+ postDTO.getGroup().getName() +" ! First join it",HttpStatus.METHOD_NOT_ALLOWED);
-        }return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(postDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     public Optional<PostDTO> findById(Integer postId) {
-        System.out.println(postRepository.findById(postId).get().getGroup().getName());
         return Optional.ofNullable(postRepository.findById(postId).map(this::mapToDTO).orElseThrow(() ->
                 new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
@@ -94,17 +115,27 @@ public class PostServiceImpl implements PostService {
         postDTO.setComments(new ArrayList<>());
 
         UserWithNameDTO loggedUserDto = userService.getUserWithNameDTOById(loggedUser).get();
-        Optional<GroupDTO> group = groupService.findById(groupId);
-
         postDTO.setOwner(loggedUserDto);
-        if (group.isPresent()) {
-            if (group.get().getMembers().contains(loggedUserDto)) {
-                postDTO.setGroup(group.get());
+        boolean isMember = false;
+
+        if (groupId != null) {
+            Optional<GroupDTO> group = groupService.findById(groupId);
+
+            if (group.isPresent()) {
+                List<UserWithNameDTO> members = group.get().getMembers();
+                for (UserWithNameDTO member : members) {
+                    if (member.getId().equals(loggedUserDto.getId())) {
+                        isMember = true;
+                    }
+                }
+                if (isMember) {
+                    postDTO.setGroup(group.get());
+                } else {
+                    return new ResponseEntity<>("you are not member in group " + group.get().getName() + " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+                }
             } else {
-                return new ResponseEntity<>("you are not member in group "+ postDTO.getGroup().getName() +" ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+                return new ResponseEntity<>("Group not found", HttpStatus.NOT_FOUND);
             }
-        } else {
-            return new ResponseEntity<>("Group not found", HttpStatus.NOT_FOUND);
         }
         Post post = mapToEntity(postDTO);
         post = postRepository.save(post);
@@ -118,7 +149,6 @@ public class PostServiceImpl implements PostService {
                 image.setPost(mapToEntity(findById(post.getId()).get()));
                 imageService.saveImage(image);
                 os.close();
-
             }
         }
         post = postRepository.save(post);
@@ -127,12 +157,23 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     public ResponseEntity<?> likeAndUnlike(Integer postId, Integer loggedUserId) {
+
         Optional<PostDTO> postDTO = findById(postId);
         if (postDTO.isPresent()) {
             User u = userRepository.findById(loggedUserId).orElse(null);
             assert u != null;
-            if (postDTO.get().getGroup().getMembers().contains(userService.mapToUserWithNameDTO(u))) {
-                return new ResponseEntity<>("you are not member in group "+ postDTO.get().getGroup().getName() +" ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+            boolean isMember = false;
+            if (postDTO.get().getGroup() != null) {
+                List<UserWithNameDTO> members = postDTO.get().getGroup().getMembers();
+                for (UserWithNameDTO member : members) {
+                    if (member.getId().equals(u.getId())) {
+                        isMember = true;
+                        break;
+                    }
+                }
+                if (!isMember)
+                    return new ResponseEntity<>("you are not member in group " + postDTO.get().getGroup().getName() +
+                            " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
             }
             List<Post> likedPosts = u.getLikedPosts();
 
@@ -143,19 +184,22 @@ public class PostServiceImpl implements PostService {
             }
             u.setLikedPosts(likedPosts);
             userRepository.save(u);
-        } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
-        return new ResponseEntity<>(mapToDTO(postRepository.findById(postId).get()), HttpStatus.OK);
 
+        } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<?> deletePost(Integer id, Integer loggedUserId) {
         PostDTO p = findById(id).orElseThrow(() -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription()));
         UserWithoutPassDTO loggedUserDto = userService.getUserWithoutPassDTOById(loggedUserId).get();
 
-        if(p.getGroup()!=null){
+        if (p.getGroup() != null) {
             List<GroupDTO> loggedUserGroups = loggedUserDto.getGroupAdmin();
-            for (GroupDTO groupDTO:loggedUserGroups ){
-                if (groupDTO.getId().equals(p.getGroup().getId())){
+            for (GroupDTO groupDTO : loggedUserGroups) {
+                if (groupDTO.getId().equals(p.getGroup().getId())) {
+
+                    commentService.deleteAllByPost(id);
                     imageService.deleteByPostId(id);
                     postRepository.deletePostById(p.getId());
                     return new ResponseEntity<>("Post is deleted", HttpStatus.OK);
@@ -165,6 +209,8 @@ public class PostServiceImpl implements PostService {
         if (!Objects.equals(p.getOwner().getId(), loggedUserId)) {
             return new ResponseEntity<>("You cannot delete other's posts", HttpStatus.FORBIDDEN);
         }
+
+        commentService.deleteAllByPost(id);
         imageService.deleteByPostId(id);
         postRepository.deletePostById(p.getId());
         return new ResponseEntity<>("Post is deleted", HttpStatus.OK);
@@ -182,6 +228,43 @@ public class PostServiceImpl implements PostService {
 
         return new ResponseEntity<>(findById(postId).get(), HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<?> likeAndUnlikeComment(Integer id, int loggedUser) {
+        Optional<CommentDTO> optionalCommentDTO = commentService.findById(id);
+        if (optionalCommentDTO.isPresent()) {
+            User u = userRepository.findById(loggedUser).orElse(null);
+            assert u != null;
+            CommentDTO commentDTO = optionalCommentDTO.get();
+            GroupDTO groupDTO = commentDTO.getPost().getGroup();
+            boolean isMember = false;
+            if (groupDTO != null) {
+                List<UserWithNameDTO> members = groupDTO.getMembers();
+                for (UserWithNameDTO member : members) {
+                    if (member.getId().equals(u.getId())) {
+                        isMember = true;
+                        break;
+                    }
+                }
+                if (!isMember) return new ResponseEntity<>("you are not member in group " + groupDTO.getName() +
+                        " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+            }
+            List<Comment> likedComments = u.getLikedComments();
+
+            if (u.getLikedComments().contains(commentService.mapToEntity(commentDTO))) {
+                u.getLikedComments().remove(commentService.mapToEntity(commentDTO));
+            } else {
+                u.getLikedComments().add(commentService.mapToEntity(commentDTO));
+            }
+            u.setLikedComments(likedComments);
+            userRepository.save(u);
+
+        } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
     public Post mapToEntity(PostDTO postDTO) {
         return modelMapper.map(postDTO, Post.class);
     }

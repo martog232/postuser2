@@ -40,7 +40,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public byte[] download(Integer id) throws IOException {
-        Image image = imageRepository.findById(id).get();
+        Image image = imageRepository.getById(id);
         String url = image.getUrl();
         File pFile = new File(url);
         return Files.readAllBytes(pFile.toPath());

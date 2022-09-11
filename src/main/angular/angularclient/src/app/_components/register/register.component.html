@@ -2,6 +2,9 @@
   <div class="container h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-lg-12 col-xl-11">
+      <h1 class="d-flex justify-content-center">I am PokazGram. Nice to meet you&nbsp;
+        <p class="text-white fs-1"> {{emptyRegistration.username}}</p> !
+      </h1>
         <div class="card text-black" style="border-radius: 25px;">
           <div class="card-body p-md-5">
             <div class="row justify-content-center">
@@ -12,51 +15,62 @@
                 <form class="mx-1 mx-md-4">
 
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                    <i class="fas bi bi-person-fill fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="text" id="form3Example1c" class="form-control" [(ngModel)]="emptyRegistration.username"/>
-                      <label class="form-label" for="form3Example1c">Your Username</label>
+                      <input type="text" id="form3Example1c" class="form-control is-invalid"
+                        [(ngModel)]="emptyRegistration.username" />
+                      <label class="h5 form-label" for="form3Example1c">Your Username</label>
+                    </div>
+                    <div id="1332" class="text-danger h5">
+                      Username already exists!
                     </div>
                   </div>
 
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                    <i class="fas bi bi-envelope fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="email" id="form3Example3c" class="form-control" [(ngModel)]="emptyRegistration.email"/>
-                      <label class="form-label" for="form3Example3c">Your Email</label>
+                      <input type="email" id="form3Example3c" class="form-control is-invalid"
+                        [(ngModel)]="emptyRegistration.email"  required pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$" />
+                      <label class="h5 form-label" for="form3Example3c">Your Email</label>
+                    </div>
+                    <div id="123" class="text-danger h5">
+                      Email already exists!
                     </div>
                   </div>
 
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                    <i class="fas bi bi-lock fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="password" id="form3Example4c" class="form-control" type="password" [(ngModel)]="emptyRegistration.password"/>
-                      <label class="form-label" for="form3Example4c">Password</label>
+                      <input type="password" id="form3Example4c" class="form-control" type="password"
+                        [(ngModel)]="emptyRegistration.password" />
+                      <label class="h5 form-label" for="form3Example4c">Password</label>
                     </div>
                   </div>
 
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                    <i class="fas bi bi-lock-fill fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="password" id="form3Example4cd" class="form-control" type="password" [(ngModel)]="emptyRegistration.confirmPassword"/>
-                      <label class="form-label" for="form3Example4cd">Repeat your password</label>
+                      <input type="password" id="form3Example4cd" class="form-control is-invalid" type="password"
+                        [(ngModel)]="emptyRegistration.confirmPassword" />
+                      <label class="h5 form-label" for="form3Example4cd">Repeat your password</label>
+                    </div>
+                    <div id="" class="text-danger h5">
+                      Pasword are not same!
                     </div>
                   </div>
 
                   <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                     <button type="button" class="btn btn-primary btn-lg" (click)="onRegUser()">Register</button>
                   </div>
-                      <div class="d-flex justify-content-center links">
-                        Have already an account? <a href="http://localhost:4200/sign-in">Login here</a>
-                      </div>
+                  <div class="d-flex justify-content-center links h5">
+                    Have already an account? <a class="h5 text-primary" href="http://localhost:4200/sign-in">Login
+                      here</a>
+                  </div>
                 </form>
-
 
               </div>
               <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-
                 <img src="../../../assets/sign-up-background.jpg" class="img-fluid" alt="Sample image">
-
               </div>
             </div>
           </div>

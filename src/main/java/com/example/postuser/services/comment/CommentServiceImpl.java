@@ -12,10 +12,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -35,23 +37,30 @@ public class CommentServiceImpl implements CommentService {
         return modelMapper.map(commentDTO, Comment.class);
     }
 
+    @Transactional
     public ResponseEntity<?> deleteComment(Integer commentId, Integer loggedUser) {
         CommentDTO p = findById(commentId).orElseThrow(() ->
                 new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription()));
         if (!Objects.equals(p.getOwner().getId(), loggedUser)) {
             return new ResponseEntity<>("You cannot delete other's posts", HttpStatus.FORBIDDEN);
         }
-        commentRepository.delete(mapToEntity(p));
+        commentRepository.deleteCommentById(p.getId());
 
         return new ResponseEntity<>("Comment is deleted", HttpStatus.OK);
     }
 
+    @Override
     public Optional<CommentDTO> findById(Integer commentId) {
         return Optional.ofNullable(commentRepository.findById(commentId).map(this::mapToDTO).orElseThrow(() ->
                 new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
 
-    public CommentDTO createComment(String content, PostDTO postDTO, Integer loggedUser){
+    public ResponseEntity<?> getAllByPostId(Integer postId) {
+        return new ResponseEntity<>(commentRepository.getAllByPostId(postId).stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    @Override
+    public CommentDTO createComment(String content, PostDTO postDTO, Integer loggedUser) {
         CommentDTO createdComment = new CommentDTO();
         createdComment.setOwner(userService.getUserWithNameDTOById(loggedUser).get());
         createdComment.setPost(postDTO);
@@ -60,4 +69,10 @@ public class CommentServiceImpl implements CommentService {
 
         return createdComment;
     }
+
+    @Override
+    public void deleteAllByPost(Integer id) {
+        commentRepository.deleteAllByPost(id);
+    }
+
 }

@@ -24,7 +24,7 @@ public interface UserService {
 
     Optional<User> getUserById(Integer id);
 
-    UserWithoutPassDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException;
+    UserWithNameDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException;
 
     String confirmToken(String token) throws NoSuchAlgorithmException;
 

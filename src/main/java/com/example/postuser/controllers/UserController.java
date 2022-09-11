@@ -1,10 +1,7 @@
 package com.example.postuser.controllers;
 
 import com.example.postuser.controllers.config.ControllerConfig;
-import com.example.postuser.model.dto.user.DoublePassDTO;
-import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
-import com.example.postuser.model.dto.user.UserLoginDTO;
-import com.example.postuser.model.dto.user.UserWithoutPassDTO;
+import com.example.postuser.model.dto.user.*;
 import com.example.postuser.services.user.UserService;
 import lombok.AllArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
@@ -41,9 +38,9 @@ public class UserController {
 
     @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public String login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
-        UserWithoutPassDTO responseDTO = userService.login(loginDTO);
+        UserWithNameDTO responseDTO = userService.login(loginDTO);
         sessionManager.loginUser(ses, responseDTO.getId());
-        return responseDTO.getUsername();
+        return ses.getId();
     }
 
     @PostMapping(value = "/sign-out")

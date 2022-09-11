@@ -17,6 +17,8 @@ public interface PostService {
 
     ResponseEntity<?> findById(Integer postId, int loggedUser);
 
+    ResponseEntity<?> getAllPostsByGroup(Integer groupId, Integer loggedUserId);
+
     ResponseEntity<?> create(String content, List<MultipartFile> photoList, Integer loggedUser, Integer groupId) throws IOException;
 
     ResponseEntity<?> likeAndUnlike(Integer postId, Integer loggedUserId);
@@ -28,4 +30,6 @@ public interface PostService {
     PostDTO mapToDTO(Post post);
 
     ResponseEntity<?> addComment(Integer postId, String commentContent, Integer loggedUser);
+
+    ResponseEntity<?> likeAndUnlikeComment(Integer id, int loggedUser);
 }

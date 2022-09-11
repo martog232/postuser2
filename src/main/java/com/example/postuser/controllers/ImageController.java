@@ -23,7 +23,7 @@ public class ImageController {
 //        return imageService.upload(id, file);
 //    }
 
-    @GetMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] download(@PathVariable Integer id) throws IOException {
         //find it ,extract its url
         //get the physical file from url

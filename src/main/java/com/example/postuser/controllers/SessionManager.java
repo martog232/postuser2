@@ -10,6 +10,10 @@ import javax.servlet.http.HttpSession;
 public class SessionManager {
     private static final String LOGGED_USER_ID = "LoggedUser";
 
+    public void loginUser(HttpSession ses, Integer id) {
+        ses.setAttribute(LOGGED_USER_ID, id);
+    }
+
     public int getLoggedUser(HttpSession session) throws AuthenticationException {
         if (session.getAttribute(LOGGED_USER_ID) == null) {
             throw new AuthenticationException("You have to log in!");
@@ -17,11 +21,6 @@ public class SessionManager {
             return (Integer) session.getAttribute(LOGGED_USER_ID);
         }
     }
-
-    public void loginUser(HttpSession ses, Integer id) {
-        ses.setAttribute(LOGGED_USER_ID, id);
-    }
-
     public void logoutUser(HttpSession ses) {
         ses.invalidate();
     }

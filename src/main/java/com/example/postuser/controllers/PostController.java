@@ -10,6 +10,7 @@ import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,7 +47,7 @@ public class PostController {
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@RequestParam String content, @ModelAttribute List<MultipartFile> photoList, HttpSession ses, @RequestParam(required = false, defaultValue = "0") Integer groupId)
+    public ResponseEntity<?> create(@RequestParam String content, @ModelAttribute List<MultipartFile> photoList, HttpSession ses,@Nullable @RequestParam(required = false) Integer groupId)
             throws AuthenticationException, IOException {
         return postService.create(content, photoList, sessionManager.getLoggedUser(ses), groupId);
     }
@@ -63,10 +64,5 @@ public class PostController {
         return postService.deletePost(id, (Integer) ses.getAttribute("LoggedUser"));
     }
 
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, value = "/add-comment/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestParam String commentContent, HttpSession ses) throws AuthenticationException {
 
-        return postService.addComment(id, commentContent, sessionManager.getLoggedUser(ses));
-    }
 }

@@ -4,7 +4,6 @@ package com.example.postuser.controllers.handler;
 import com.example.postuser.controllers.SessionManager;
 import com.example.postuser.controllers.config.ControllerConfig;
 import com.example.postuser.model.dto.group.GroupDTO;
-import com.example.postuser.model.entities.Group;
 import com.example.postuser.services.group.GroupService;
 import lombok.AllArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -35,15 +33,15 @@ public class GroupController {
     }
 
     @GetMapping(value = "/search/{name}")
-    public List<Object> findGroupByName(@PathVariable String name,HttpSession ses) throws AuthenticationException {
+    public List<Object> findGroupByName(@PathVariable String name, HttpSession ses) throws AuthenticationException {
 
         return groupService.findByName(name, sessionManager.getLoggedUser(ses));
     }
 
     @GetMapping(value = "/{groupId}")
     public ResponseEntity<?> findGroupById(@PathVariable Integer groupId, HttpSession ses) throws AuthenticationException {
-
-        return groupService.findById(groupId, sessionManager.getLoggedUser(ses));
+        System.out.println(ses.getId());
+        return groupService.findById(groupId, 78);
     }
 
     @PutMapping(value = "/{id}")
@@ -56,9 +54,9 @@ public class GroupController {
         return groupService.deleteGroup(id, sessionManager.getLoggedUser(ses));
     }
 
-    @PutMapping(value = "/{groupId}/add-admin")
+    @PutMapping(value = "/{groupId}/add-admin/{newAdminId}")
     public ResponseEntity<?> addGroupAdmin(@PathVariable Integer groupId, @RequestParam Integer newAdminId, HttpSession ses)
-        throws AuthenticationException{
+            throws AuthenticationException {
         return null;
     }
 

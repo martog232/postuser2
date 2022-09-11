@@ -17,7 +17,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("delete from Post p where p.id = ?1")
     void deletePostById(Integer id);
 
-    @Query("select p from Post p where p.owner.id=?1 and p.group is null")
+    @Query("select p from Post p where p.owner.id=?1 and p.group is null order by p.created")
     List<Post> getAllByOwnerIdAndNotInGroup(Integer ownerId);
+
+    @Query("select p from Post p where p.group.id = ?1 order by p.created")
+    List<Post> getAllByGroup(Integer groupId);
 
 }

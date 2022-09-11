@@ -2,6 +2,9 @@
   <div class="container h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-lg-12 col-xl-11">
+        <h1 class="d-flex justify-content-center">Welcome back to PokazGram&nbsp;
+          <h1 class="text-white"> {{emptyLogin.username}}</h1> !
+        </h1>
         <div class="card text-black" style="border-radius: 25px;">
           <div class="card-body p-md-5">
             <div class="row justify-content-center">
@@ -13,26 +16,28 @@
 
                   <!-- Email input -->
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                    <i class="bi bi-envelope  fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="email" id="form3Example3c" [(ngModel)]="emptyLogin.username" class="form-control" />
-                      <label class="form-label" for="form3Example3c">Email</label>
+                      <input type="email" id="form3Example3c" [(ngModel)]="emptyLogin.username"
+                        class="form-control h4" />
+                      <label class="h5 form-label" for="form3Example3c">Username</label>
                     </div>
                   </div>
 
                   <!-- Password input -->
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                    <i class="bi bi-lock fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="password" id="form3Example4c" [(ngModel)]="emptyLogin.password" class="form-control" type="password" />
-                      <label class="form-label" for="form3Example4c">Password</label>
+                      <input type="password" id="form3Example4c" [(ngModel)]="emptyLogin.password" class="form-control"
+                        type="password" />
+                      <label class="h5 form-label" for="form3Example4c">Password</label>
                     </div>
                   </div>
 
                   <!-- Forgot button -->
                   <div class="d-flex justify-content-around align-items-center mb-4">
 
-                    <a href="http://localhost:4200/forgot-pass">Forgot password?</a>
+                    <a class="h4 text-primary" href="http://localhost:4200/forgot-pass">Forgot password?</a>
                   </div>
 
                   <!-- Submit button -->
@@ -40,8 +45,8 @@
                     <button type="button" class="btn btn-primary btn-lg" (click)="onLogUser()">Sign in</button>
                   </div>
                   <!-- Sign up template redirect-->
-                  <div class="d-flex justify-content-center links">
-                    Don't have an account?<a href="http://localhost:4200/sign-up">Sign Up</a>
+                  <div class="d-flex justify-content-center links h5">
+                    Don't have an account? <a class="h5 text-primary" href="http://localhost:4200/sign-up">Sign Up</a>
                   </div>
                 </form>
               </div>

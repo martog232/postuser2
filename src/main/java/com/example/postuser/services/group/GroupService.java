@@ -35,8 +35,4 @@ public interface GroupService {
     NotJoinedGroupDTO mapToNotJoinedGroupDTO(Group group);
 
     NotJoinedGroupDTO mapToNotJoinedGroupDTO(GroupDTO groupDTO);
-
-//    GroupDTO createPost(String content, List<MultipartFile> photoList, Integer loggedUser, Integer groupId) throws IOException;
-//
-//    PostDTO setGroupToPost(Integer groupId, PostDTO postDTO);
 }

@@ -1,0 +1,68 @@
+<nav class="navbar sticky-top m-0 navbar-light" style="background-color: #83002e;">
+    <img src="../../../assets/big-logo.png" class="img-fluid float-left col-md-1">
+    <a class="navbar-brand text-white h1 col-md-10">PokazGram</a>
+    <button class="btn btn-danger">Log out</button>
+</nav>
+<section class="" style="background-color: #F50057;">
+    <div class="container h-100">
+        <h1>{{emptyGroup.name}}</h1>
+        <h3>{{emptyGroup.description}}</h3>
+        <div class="d-flex justify-content-evenly">
+            <button val="emptyGroup.id" class="btn btn-primary" mat-button (click)="openDialogForCreatingPost()">Create Post</button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false"><i class="bi bi-people-fill"></i>
+                    {{emptyGroup.members.length}}
+                </button>
+                <div class="dropdown-menu">
+                    <a *ngFor="let member of emptyGroup.members" class="dropdown-item" href="#">{{member.username}}</a>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false"><i class="bi bi-people-fill"></i>
+                    {{emptyGroup.admins.length}}
+                </button>
+                <div class="dropdown-menu">
+                    <a *ngFor="let admin of emptyGroup.admins" class="dropdown-item" href="#">{{admin.username}}</a>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary">
+                Join/Leave
+            </button>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center h-100">
+
+            <app-post *ngFor="let post of emptyGroup.posts" class="mt-3"></app-post>
+
+        </div>
+        <app-create-post></app-create-post>
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+<section class="" style="background-color: #F50057;">
+    <div class="container h-100">
+        <h1>petarMaritov_best</h1>
+        <div class="d-flex justify-content-evenly">
+            <button type="button" class="btn btn-primary">
+                Unfollow
+            </button>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center h-100">
+
+            <app-post *ngFor="let post of emptyGroup.posts" class="mt-3"></app-post>
+
+        </div>
+        <app-create-post></app-create-post>
+    </div>
+</section>
+

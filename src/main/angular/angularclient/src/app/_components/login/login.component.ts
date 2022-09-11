@@ -16,22 +16,20 @@ export class LoginComponent implements OnInit {
     password: ''
   }
 
-  loginSubscription: Subscription | undefined;
 
-  constructor(private userService: UserService,public router: Router, private route:ActivatedRoute) { }
+  constructor(private userService: UserService,public router: Router) { }
 
   ngOnInit(): void {
     localStorage.setItem("key","marto")
   }
 
-  ngOnDestroy(): void {
-    this.loginSubscription?.unsubscribe();
-  }
+        // localStorage.setItem('JSESSIONID', response);
 
   onLogUser(): void {
-    this.loginSubscription = this.userService.login(this.emptyLogin).subscribe(
-      (response: string) => {
+    this.userService.login(this.emptyLogin).subscribe(
+      (response: any) => {
         console.log(response);
+        this.router.navigate(['/groups/',"10"]);
       }
     )
   }
