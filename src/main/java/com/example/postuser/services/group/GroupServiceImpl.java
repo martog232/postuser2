@@ -112,7 +112,7 @@ public class GroupServiceImpl implements GroupService {
             } else members.add(user);
             group.setMembers(members);
             groupRepository.save(group);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(findById(groupId, loggedUserId), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -129,6 +129,7 @@ public class GroupServiceImpl implements GroupService {
         }
         return new ResponseEntity<>("you cant delete group, that not belongs to you", HttpStatus.METHOD_NOT_ALLOWED);
     }
+
 
     @Override
     public Group mapToEntity(GroupDTO groupDTO) {
@@ -148,5 +149,54 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public NotJoinedGroupDTO mapToNotJoinedGroupDTO(GroupDTO groupDTO) {
         return modelMapper.map(groupDTO, NotJoinedGroupDTO.class);
+    }
+
+    @Override
+    public ResponseEntity<?> editGroup(Integer groupId, String name, String description, int loggedUserId) {
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if (optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
+            List<User> admins = group.getAdmins();
+            boolean isAdmin = false;
+            for (User admin : admins) {
+                if (admin.getId().equals(loggedUserId)) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+            if (!isAdmin) return new ResponseEntity<>("you are not member in group " + group.getName() +
+                    " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+            if (name != null) group.setName(name);
+            if (description != null) group.setDescription(description);
+            groupRepository.save(group);
+            return new ResponseEntity<>(findById(groupId, loggedUserId), HttpStatus.OK);
+
+        } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+
+    }
+
+    @Override
+    public ResponseEntity<?> addGroupMember(Integer groupId, Integer newAdminId, int loggedUser) {
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        Optional<User> newOptionalAdmin = userService.getUserById(newAdminId);
+        if (optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
+            List<User> admins = group.getAdmins();
+            boolean isAdmin = false;
+            for (User admin : admins) {
+                if (admin.getId().equals(loggedUser)) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+            if (!isAdmin) return new ResponseEntity<>("you are not member in group " + group.getName() +
+                    " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+            if (newOptionalAdmin.isPresent()) {
+                admins.add(newOptionalAdmin.get());
+                group.setAdmins(admins);
+                return new ResponseEntity<>(findById(groupId).get(), HttpStatus.OK);
+            } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+
+        } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
     }
 }

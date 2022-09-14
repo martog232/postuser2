@@ -35,4 +35,8 @@ public interface GroupService {
     NotJoinedGroupDTO mapToNotJoinedGroupDTO(Group group);
 
     NotJoinedGroupDTO mapToNotJoinedGroupDTO(GroupDTO groupDTO);
+
+    ResponseEntity<?> editGroup(Integer groupId, String name, String description, int loggedUser);
+
+    ResponseEntity<?> addGroupMember(Integer groupId, Integer newAdminId, int loggedUser);
 }

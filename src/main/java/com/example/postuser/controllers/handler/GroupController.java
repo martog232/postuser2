@@ -32,7 +32,7 @@ public class GroupController {
         return groupService.create(name, description, sessionManager.getLoggedUser(ses));
     }
 
-    @GetMapping(value = "/search/{name}")
+    @GetMapping(value = "/{name}/search")
     public List<Object> findGroupByName(@PathVariable String name, HttpSession ses) throws AuthenticationException {
 
         return groupService.findByName(name, sessionManager.getLoggedUser(ses));
@@ -44,7 +44,7 @@ public class GroupController {
         return groupService.findById(groupId, 78);
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/join")
     public ResponseEntity<?> joinAndLeave(@PathVariable Integer id, HttpSession ses) throws AuthenticationException {
         return groupService.joinAndLeave(id, sessionManager.getLoggedUser(ses));
     }
@@ -57,7 +57,13 @@ public class GroupController {
     @PutMapping(value = "/{groupId}/add-admin/{newAdminId}")
     public ResponseEntity<?> addGroupAdmin(@PathVariable Integer groupId, @RequestParam Integer newAdminId, HttpSession ses)
             throws AuthenticationException {
-        return null;
+        return groupService.addGroupMember(groupId, newAdminId, sessionManager.getLoggedUser(ses));
     }
+
+    @PutMapping(value = "/{groupId}")
+    public ResponseEntity<?> editGroup(@PathVariable Integer groupId, @RequestParam String name, @RequestParam String description, HttpSession ses) throws AuthenticationException {
+        return groupService.editGroup(groupId, name, description, sessionManager.getLoggedUser(ses));
+    }
+
 
 }

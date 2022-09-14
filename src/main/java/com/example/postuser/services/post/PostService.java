@@ -32,4 +32,6 @@ public interface PostService {
     ResponseEntity<?> addComment(Integer postId, String commentContent, Integer loggedUser);
 
     ResponseEntity<?> likeAndUnlikeComment(Integer id, int loggedUser);
+
+    ResponseEntity<?> editPost(Integer id, String content, int loggedUser);
 }

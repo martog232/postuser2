@@ -126,6 +126,7 @@ public class PostServiceImpl implements PostService {
                 for (UserWithNameDTO member : members) {
                     if (member.getId().equals(loggedUserDto.getId())) {
                         isMember = true;
+                        break;
                     }
                 }
                 if (isMember) {
@@ -263,6 +264,34 @@ public class PostServiceImpl implements PostService {
 
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+
+    @Override
+    public ResponseEntity<?> editPost(Integer postId, String content, int loggedUserId) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            if (post.getOwner().getId().equals(loggedUserId)) {
+                if (post.getGroup() != null) {
+                    boolean isMember = false;
+                    List<User> groupMembers = post.getGroup().getMembers();
+                    for (User u : groupMembers) {
+                        if (u.getId().equals(loggedUserId)) {
+                            isMember = true;
+                            break;
+                        }
+                    }
+                    if (!isMember)
+                        return new ResponseEntity<>("you are not member in group " + post.getGroup().getName() +
+                                " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+                }
+                post.setContent(content);
+                postRepository.save(post);
+                return new ResponseEntity<>(findById(postId), HttpStatus.OK);
+            }
+            return new ResponseEntity<>("You cannot edit other user's posts", HttpStatus.FORBIDDEN);
+
+        } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
     }
 
     public Post mapToEntity(PostDTO postDTO) {

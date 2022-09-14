@@ -40,8 +40,8 @@ public class PostController {
         return postService.getAllFollowingsPostsInMainPage(sessionManager.getLoggedUser(ses));
     }
 
-    @GetMapping(value = "/{post_id}")
-    public ResponseEntity<?> findById(@PathVariable(name = "post_id") Integer postId, HttpSession ses) throws AuthenticationException {
+    @GetMapping(value = "/{postId}")
+    public ResponseEntity<?> findById(@PathVariable Integer postId, HttpSession ses) throws AuthenticationException {
         return postService.findById(postId, sessionManager.getLoggedUser(ses));
     }
 
@@ -52,10 +52,16 @@ public class PostController {
         return postService.create(content, photoList, sessionManager.getLoggedUser(ses), groupId);
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/like")
     public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses) throws Exception {
 
         return postService.likeAndUnlike(id, sessionManager.getLoggedUser(ses));
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<?> editPost(@PathVariable(name = "id") Integer id,@RequestParam String content, HttpSession ses) throws Exception {
+
+        return postService.editPost(id,content,sessionManager.getLoggedUser(ses));
     }
 
     @DeleteMapping(value = "/{id}")
