@@ -17,24 +17,18 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <i class="fas bi bi-person-fill fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="text" id="form3Example1c" class="form-control is-invalid"
+                      <input type="text" id="form3Example1c" class="form-control"
                         [(ngModel)]="emptyRegistration.username" />
                       <label class="h5 form-label" for="form3Example1c">Your Username</label>
-                    </div>
-                    <div id="1332" class="text-danger h5">
-                      Username already exists!
                     </div>
                   </div>
 
                   <div class="d-flex flex-row align-items-center mb-4">
                     <i class="fas bi bi-envelope fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="email" id="form3Example3c" class="form-control is-invalid"
+                      <input type="email" id="form3Example3c" class="form-control"
                         [(ngModel)]="emptyRegistration.email"  required pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$" />
                       <label class="h5 form-label" for="form3Example3c">Your Email</label>
-                    </div>
-                    <div id="123" class="text-danger h5">
-                      Email already exists!
                     </div>
                   </div>
 
@@ -50,13 +44,10 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <i class="fas bi bi-lock-fill fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="password" id="form3Example4cd" class="form-control is-invalid" type="password"
+                      <input type="password" id="form3Example4cd" class="form-control" type="password"
                         [(ngModel)]="emptyRegistration.confirmPassword" />
                       <label class="h5 form-label" for="form3Example4cd">Repeat your password</label>
-                    </div>
-                    <div id="" class="text-danger h5">
-                      Pasword are not same!
-                    </div>
+                      </div>
                   </div>
 
                   <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">

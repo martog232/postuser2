@@ -38,8 +38,13 @@ public interface UserService {
 
     void confirmResetPassToken(String token) throws NoSuchAlgorithmException;
 
-    ResponseEntity<String> changePass(String rawStringToken, DoublePassDTO passDTO) throws NoSuchAlgorithmException;
+    void changePass(String rawStringToken, DoublePassDTO passDTO) throws NoSuchAlgorithmException;
 
     List<Group> getAllGroupsYouAreAdminOf(Integer loggedUserId);
+
+    Optional<User> getUserByUserName(String username);
+
+    UserWithoutPassDTO getUserDTOByUserName(String username);
+
 
 }

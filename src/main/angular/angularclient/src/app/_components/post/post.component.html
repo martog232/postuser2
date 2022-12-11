@@ -1,4 +1,51 @@
-<div class="d-flex justify-content-center">
+<div *ngIf="post" class="card col-md-7 mx-auto text-black post-container">
+    <div class="card-body p-md-5">
+        <div class="row justify-content-center">
+            <div class="w-100 col-lg-6 col-xl-5 order-2 order-lg-1">
+                <div class="col-md-12 form-inline justify-content-between">
+                    <div class="col-md-7 p-0 mb-2 mx-1  mt-4">
+                        <p class="h3 m-0 fw-bold">{{post.owner.username}}
+                        </p>
+                        <p class="h6 mb-2">{{post.created | date: 'dd.MM.YYYY'}}</p>
+                    </div>
+                    <div>
+                        <div class="d-inline-block" ngbDropdown #myDropOptions="ngbDropdown">
+                            <button type="button" class="btn btn-primary me-2" id="dropdownManual" ngbDropdownAnchor (focus)="myDropOptions.open()"></button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownManual">
+                                <button class="btn btn-danger m-1" (click)="deletePost(post.id,post.owner.username)"><i class="bi bi-trash"></i>Delete</button>
+                                <button class="btn btn-primary m-1" (click)="openEditPostModal(post.owner.username)"><i class="bi bi-pen"></i>Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p class="h4 w-100  my-2 mt-4">{{post.content}}</p>
+                </div>
+                <div *ngFor="let image of post.imageList">
+                    <img [src]="image.url" class="img-fluid" alt="image">
+                </div>
+                <div class="form-inline mt-2 d-flex justify-content-around">
+                    <button type="button" (click)="likeUnlike(post.id)" value="{{post.id}}" id="post{{post.id}}"
+                        class="btn btn-primary">
+                        <i class="bi bi-heart-fill"></i>
+                        {{post.likers.length}}
+                    </button>
+
+                    <button type="button" (click)="openAddCommentModal()" class="btn btn-primary">
+                        <i class="bi bi-chat-fill"></i>
+                        {{post.comments.length}}
+                    </button>
+                </div>
+                <div *ngFor="let comment of post.comments">
+                    <app-comment [comment]="comment"></app-comment>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <div class="d-flex justify-content-center">
     <div class="card col-md-7  text-black" style="border-radius: 25px;">
         <div class="card-body p-md-5">
             <div class="row justify-content-center">
@@ -29,7 +76,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- <div class="d-flex justify-content-center">
     <div class="card col-md-7  text-black" style="border-radius: 25px;">

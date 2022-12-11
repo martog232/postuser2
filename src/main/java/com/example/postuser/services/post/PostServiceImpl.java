@@ -7,10 +7,7 @@ import com.example.postuser.model.dto.group.GroupDTO;
 import com.example.postuser.model.dto.post.PostDTO;
 import com.example.postuser.model.dto.user.UserWithNameDTO;
 import com.example.postuser.model.dto.user.UserWithoutPassDTO;
-import com.example.postuser.model.entities.Comment;
-import com.example.postuser.model.entities.Image;
-import com.example.postuser.model.entities.Post;
-import com.example.postuser.model.entities.User;
+import com.example.postuser.model.entities.*;
 import com.example.postuser.model.repositories.PostRepository;
 import com.example.postuser.model.repositories.UserRepository;
 import com.example.postuser.services.comment.CommentService;
@@ -19,6 +16,7 @@ import com.example.postuser.services.image.ImageService;
 import com.example.postuser.services.user.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -82,6 +81,7 @@ public class PostServiceImpl implements PostService {
     }
 
 
+    @Override
     public ResponseEntity<?> findById(Integer postId, int loggedUser) {
         Optional<Post> post = postRepository.findById(postId);
         if (post.isPresent()) {
@@ -107,12 +107,14 @@ public class PostServiceImpl implements PostService {
                 new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
 
+    @Override
     public ResponseEntity<?> create(String content, List<MultipartFile> photoList, Integer loggedUser, Integer groupId) throws IOException {
         PostDTO postDTO = new PostDTO();
         postDTO.setContent(content);
         postDTO.setImageList(new ArrayList<>());
         postDTO.setLikers(new ArrayList<>());
         postDTO.setComments(new ArrayList<>());
+        postDTO.setCreated(LocalDateTime.now());
 
         UserWithNameDTO loggedUserDto = userService.getUserWithNameDTOById(loggedUser).get();
         postDTO.setOwner(loggedUserDto);
@@ -140,7 +142,8 @@ public class PostServiceImpl implements PostService {
         }
         Post post = mapToEntity(postDTO);
         post = postRepository.save(post);
-        if (photoList != null) {
+        if(photoList!=null){
+        if (photoList.size()>0) {
             for (MultipartFile multipartFile : photoList) {
                 File pFile = new File(ASSETS_DIR + File.separator + post.getId() + "_" + System.nanoTime() + ".png");
                 OutputStream os = new FileOutputStream(pFile);
@@ -151,12 +154,12 @@ public class PostServiceImpl implements PostService {
                 imageService.saveImage(image);
                 os.close();
             }
-        }
+        }}
         post = postRepository.save(post);
         return new ResponseEntity<>(mapToDTO(mapToEntity(findById(post.getId()).get())), HttpStatus.OK);
     }
 
-    @Transactional
+
     public ResponseEntity<?> likeAndUnlike(Integer postId, Integer loggedUserId) {
 
         Optional<PostDTO> postDTO = findById(postId);
@@ -184,10 +187,10 @@ public class PostServiceImpl implements PostService {
                 u.getLikedPosts().add(mapToEntity(postDTO.get()));
             }
             u.setLikedPosts(likedPosts);
-            userRepository.save(u);
+            userRepository.saveAndFlush(u);
 
         } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(findById(postId),HttpStatus.OK);
     }
 
     @Transactional
@@ -225,7 +228,7 @@ public class PostServiceImpl implements PostService {
         List<CommentDTO> postComments = postDTO.getComments();
         postComments.add(createdComment);
         postDTO.setComments(postComments);
-        postRepository.save(mapToEntity(postDTO));
+        postRepository.saveAndFlush(mapToEntity(postDTO));
 
         return new ResponseEntity<>(findById(postId).get(), HttpStatus.OK);
     }
@@ -252,17 +255,17 @@ public class PostServiceImpl implements PostService {
             }
             List<Comment> likedComments = u.getLikedComments();
 
-            if (u.getLikedComments().contains(commentService.mapToEntity(commentDTO))) {
-                u.getLikedComments().remove(commentService.mapToEntity(commentDTO));
+            if (likedComments.contains(commentService.mapToEntity(commentDTO))) {
+                likedComments.remove(commentService.mapToEntity(commentDTO));
             } else {
-                u.getLikedComments().add(commentService.mapToEntity(commentDTO));
+                likedComments.add(commentService.mapToEntity(commentDTO));
             }
             u.setLikedComments(likedComments);
-            userRepository.save(u);
+            userRepository.saveAndFlush(u);
 
         } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(commentService.findById(id).get(), HttpStatus.OK);
 
     }
 
@@ -287,7 +290,7 @@ public class PostServiceImpl implements PostService {
                 }
                 post.setContent(content);
                 postRepository.save(post);
-                return new ResponseEntity<>(findById(postId), HttpStatus.OK);
+                return new ResponseEntity<>(mapToDTO(post), HttpStatus.OK);
             }
             return new ResponseEntity<>("You cannot edit other user's posts", HttpStatus.FORBIDDEN);
 

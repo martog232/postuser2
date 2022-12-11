@@ -24,7 +24,11 @@ export class ForgotPassComponent implements OnInit {
   }
 
   onForgotPass(): void {
-    this.sendEmailForgotPassSubscription = this.service.forgotPass(this.emptyEmail).subscribe()
+   this.service.forgotPass(this.emptyEmail).subscribe(
+    (response: any) => {
+      this.router.navigate(['/check-email']);
+    }
+   )
   }
 
 }

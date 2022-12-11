@@ -2,13 +2,10 @@ package com.example.postuser.services.group;
 
 import com.example.postuser.model.dto.group.GroupDTO;
 import com.example.postuser.model.dto.group.NotJoinedGroupDTO;
-import com.example.postuser.model.dto.post.PostDTO;
 import com.example.postuser.model.entities.Group;
 import org.springframework.expression.AccessException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +35,5 @@ public interface GroupService {
 
     ResponseEntity<?> editGroup(Integer groupId, String name, String description, int loggedUser);
 
-    ResponseEntity<?> addGroupMember(Integer groupId, Integer newAdminId, int loggedUser);
+    ResponseEntity<?> addGroupMember(Integer groupId, String newAdminUserName, int loggedUser);
 }

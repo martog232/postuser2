@@ -8,61 +8,36 @@
         <h1>{{emptyGroup.name}}</h1>
         <h3>{{emptyGroup.description}}</h3>
         <div class="d-flex justify-content-evenly">
-            <button val="emptyGroup.id" class="btn btn-primary" mat-button (click)="openDialogForCreatingPost()">Create Post</button>
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false"><i class="bi bi-people-fill"></i>
-                    {{emptyGroup.members.length}}
-                </button>
-                <div class="dropdown-menu">
-                    <a *ngFor="let member of emptyGroup.members" class="dropdown-item" href="#">{{member.username}}</a>
+            <button id="openCreatePostModal{{emptyGroup.id}}" class="btn btn-primary" mat-button
+                (click)="openCreatePostModal()">Create
+                Post</button>
+            <div class="d-inline-block" ngbDropdown #myDropMember="ngbDropdown">
+                <button type="button" class="btn btn-primary me-2" id="dropdownManualMembers" ngbDropdownAnchor
+                    (focus)="myDropMember.open()"><i class="bi bi-people-fill"></i>
+                    members : {{emptyGroup.members.length}}</button>
+                <div ngbDropdownMenu aria-labelledby="dropdownManual">
+                    <a *ngFor="let member of emptyGroup.members" ngbDropdownItem href="/users/{{member.username}}">{{member.username}}</a>
+                    <button class="btn-outline-success" (click)="addMember(emptyGroup.admins)">Add Member</button>
                 </div>
             </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false"><i class="bi bi-people-fill"></i>
-                    {{emptyGroup.admins.length}}
-                </button>
-                <div class="dropdown-menu">
-                    <a *ngFor="let admin of emptyGroup.admins" class="dropdown-item" href="#">{{admin.username}}</a>
+            <div class="d-inline-block" ngbDropdown #myDropAdmin="ngbDropdown">
+                <button type="button" class="btn btn-primary me-2" id="dropdownManualAdmins" ngbDropdownAnchor
+                    (focus)="myDropAdmin.open()"><i class="bi bi-people-fill"></i>
+                    admins : {{emptyGroup.admins.length}}</button>
+                <div ngbDropdownMenu aria-labelledby="dropdownManual">
+                    <a *ngFor="let admin of emptyGroup.admins" ngbDropdownItem href="/users/{{admin.username}}">{{admin.username}}</a>
+                    <button class="btn-outline-success" (click)="addAdmin(emptyGroup.admins)">Add Admin</button>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" (click)="onJoinLeave(emptyGroup.id)">
                 Join/Leave
             </button>
         </div>
-        <div class="row d-flex justify-content-center align-items-center h-100">
-
-            <app-post *ngFor="let post of emptyGroup.posts" class="mt-3"></app-post>
+        <div class="row d-flex justify-content-center align-items-center h-100" *ngIf="emptyGroup.posts">
+            <div class="d-flex justify-content-center mt-3" *ngFor="let post of emptyGroup.posts">
+                <app-post [post]="post"></app-post>
+            </div>
 
         </div>
-        <app-create-post></app-create-post>
     </div>
 </section>
-
-
-
-
-
-
-
-
-
-
-<section class="" style="background-color: #F50057;">
-    <div class="container h-100">
-        <h1>petarMaritov_best</h1>
-        <div class="d-flex justify-content-evenly">
-            <button type="button" class="btn btn-primary">
-                Unfollow
-            </button>
-        </div>
-        <div class="row d-flex justify-content-center align-items-center h-100">
-
-            <app-post *ngFor="let post of emptyGroup.posts" class="mt-3"></app-post>
-
-        </div>
-        <app-create-post></app-create-post>
-    </div>
-</section>
-

@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { User } from '../_models/user.model';
 import { UserLoginDTO } from '../_models/user/login-user.model';
 import { RegisterRequestUserDTO } from '../_models/user/register-user.mode';
+import { ChangePassDTO } from '../_models/user/change-pass.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,25 +27,33 @@ export class UserService {
     return this.http.get<User[]>(this.apiServerUrl + '/users');
   }
 
-  public getUser(id: number): Observable<User> {
-    return this.http.get<User>(this.apiServerUrl + '/users/' + id)
-                    .pipe(catchError(this.errorhandler));
+  public getUser(username:string): Observable<User> {
+    return this.http.get<User>(this.apiServerUrl + 'users/' + username);
   }
 
-  public login(loginDTO:UserLoginDTO){
-    return this.http.post<string>(`${this.loginUrl}`,loginDTO)
+  public login(loginDTO: UserLoginDTO) {
+    return this.http.post<string>(`${this.loginUrl}`, loginDTO)
   }
 
-  public logout(){
+  public logout() {
+    
     return this.http.get(this.logoutUrl)
   }
 
-  public register(registerDTO:RegisterRequestUserDTO){
-    return this.http.post<string>(`${this.registerUrl}`,registerDTO)
+  public register(registerDTO: RegisterRequestUserDTO) {
+    return this.http.post<string>(`${this.registerUrl}`, registerDTO)
   }
 
-  public forgotPass(email :string){
-    return this.http.post(`${this.forgotPassUrl}`,email)
+  public forgotPass(email: string) {
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("email",email);
+    return this.http.get(`${this.forgotPassUrl}`,{params:queryParams})
+  }
+
+  public changePass(dto:ChangePassDTO,token:string) {
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("token",token);
+    return this.http.post<string>(this.apiServerUrl + '/reset-pass', dto,{params:queryParams})
   }
 
   errorhandler(error: HttpErrorResponse) {

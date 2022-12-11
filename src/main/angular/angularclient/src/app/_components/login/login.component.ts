@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   constructor(private userService: UserService,public router: Router) { }
 
   ngOnInit(): void {
-    localStorage.setItem("key","marto")
+   
   }
 
         // localStorage.setItem('JSESSIONID', response);
@@ -29,7 +29,9 @@ export class LoginComponent implements OnInit {
     this.userService.login(this.emptyLogin).subscribe(
       (response: any) => {
         console.log(response);
-        this.router.navigate(['/groups/',"10"]);
+        localStorage.setItem('logged user',response.username);
+        localStorage.setItem('loggedId',response.id)
+        this.router.navigate(['/users/',response.username]);
       }
     )
   }

@@ -32,7 +32,7 @@ export class RegisterComponent implements OnInit {
 
   onRegUser():void{
     this.userService.register(this.emptyRegistration).subscribe(
-      (response : any) => {
+      (response : string) => {
         console.log(response);
         this.router.navigate(['/check-email']);
       }

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { UserWithName } from 'src/app/_models/user/user-with-name.model';
 import { Comment } from 'src/app/_models/comment.model'
+import { PostService } from 'src/app/_services/post.service';
 
 @Component({
   selector: 'app-comment',
@@ -11,19 +12,21 @@ export class CommentComponent implements OnInit {
 
   likers: UserWithName[] = [];
 
-  comment: Comment = {
-    id: undefined,
-    content: '',
-    owner: {
-      id: undefined,
-      username: ''
-    },
-    likers: this.likers
-  }
+  @Input() comment: Comment;
 
-  constructor() { }
+  constructor(private readonly postService: PostService) { }
 
   ngOnInit(): void {
   }
+
+  likeUnlikeComment(id:any){
+    this.postService.likeUnlikeComment(id)
+    .subscribe(
+     (updatedComment: Comment) =>{
+      this.comment = updatedComment;
+     }
+   )
+
+ }
 
 }

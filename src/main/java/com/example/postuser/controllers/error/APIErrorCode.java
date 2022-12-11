@@ -16,7 +16,7 @@ public enum APIErrorCode {
 
     ENTITY_NOT_FOUND            ("EX-404-1", "Entity not found",            "An entity could not be found."),
 
-    DUPLICATE_ENTITY	        ("EX-409-1", "Entity already exist", 	    "An entity with this code already exists"),
+    DUPLICATE_ENTITY	        ("EX-409-1", "Entity already exist", 	    "An entity with this username/email already exists"),
 
     UNKNOWN_SERVER_EXCEPTION	("EX-500-1", "Unknown server exception", 	"An unknown server error has occurred!");
 

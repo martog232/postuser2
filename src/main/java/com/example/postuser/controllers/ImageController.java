@@ -1,6 +1,7 @@
 package com.example.postuser.controllers;
 
 import com.example.postuser.controllers.config.ControllerConfig;
+import com.example.postuser.model.entities.Image;
 import com.example.postuser.services.image.ImageService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +19,7 @@ public class ImageController {
     private ImageService imageService;
 
 //    @PostMapping(value = "/posts/{id}/images")
-//    public Image upload(@PathVariable Integer id, @RequestPart MultipartFile file) throws IOException {
+//    public Image get(@PathVariable Integer id, @RequestPart MultipartFile file) throws IOException {
 //
 //        return imageService.upload(id, file);
 //    }

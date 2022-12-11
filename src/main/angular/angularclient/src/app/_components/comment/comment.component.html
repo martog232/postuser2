@@ -1,13 +1,12 @@
-<!-- <div *ngFor="let comment of comments"> -->
-    <div class="form-inline m-3">
-        <div class="col-md-12 form-inline text-black" style="border-radius: 5px; background-color: blanchedalmond;">
-            <div class="col-md-11">
-                <h5 class="">{{comment.owner.username}} :</h5>
-                <p>{{comment.content}}</p>
-            </div>
-            <button type="button" class="btn col-md-1"><i class="bi bi-heart-fill"></i>
-                {{comment.likers.length}}
-            </button>
+<div class="form-inline m-3">
+    <div class="col-md-12 form-inline text-black"
+        style="border-radius: 5px; background-color: blanchedalmond;">
+        <div class="col-md-11">
+            <h5 class="">{{comment.owner.username}} :</h5>
+            <p>{{comment.content}}</p>
         </div>
+        <button type="button" (click)="likeUnlikeComment(comment.id)" value="{{comment.id}}" id="comment{{comment.id}}" class="btn col-md-1"><i class="bi bi-heart-fill"></i>
+            {{comment.likers.length}}
+        </button>
     </div>
-<!-- </div> -->
+</div>

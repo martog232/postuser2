@@ -2,6 +2,7 @@ package com.example.postuser.services.user;
 
 import com.example.postuser.controllers.error.APIErrorCode;
 import com.example.postuser.exceptions.*;
+import com.example.postuser.model.dto.post.PostDTO;
 import com.example.postuser.model.dto.user.*;
 import com.example.postuser.model.entities.Group;
 import com.example.postuser.model.entities.Token;
@@ -22,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -172,7 +170,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public ResponseEntity<String> changePass(String rawStringToken, DoublePassDTO passDTO) throws NoSuchAlgorithmException {
+    public void changePass(String rawStringToken, DoublePassDTO passDTO) throws NoSuchAlgorithmException {
         if (Objects.equals(passDTO.getNewPass(), passDTO.getConfirmNewPass())) {
             String encryptedToken = passwordTokenEncrypting.encrypting(rawStringToken);
             Optional<Token> token = tokenService.getToken(encryptedToken);
@@ -184,7 +182,8 @@ public class UserServiceImpl implements UserService {
                 user.setPassword(passwordTokenEncrypting.encrypting(passDTO.getNewPass()));
                 userRepository.save(user);
                 tokenService.deleteByOwnerId(user.getId());
-                return new ResponseEntity<>("Password is changed", HttpStatus.OK);
+                new ResponseEntity<>("Password is changed", HttpStatus.OK);
+                return;
             }
             throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
         }
@@ -194,6 +193,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Group> getAllGroupsYouAreAdminOf(Integer loggedUserId) {
         return null;
+    }
+
+    @Override
+    public Optional<User> getUserByUserName(String username) {
+        return Optional.ofNullable(userRepository.findByUsername(username));
+    }
+
+    @Override
+    public UserWithoutPassDTO getUserDTOByUserName(String username) {
+        Optional<UserWithoutPassDTO> userDto = Optional.ofNullable(mapToUserWithoutPassDTO(userRepository.findByUsername(username)));
+  if(userDto.isPresent()) {
+      List<PostDTO> resultList = new ArrayList<>();
+      UserWithoutPassDTO user = userDto.get();
+      List<PostDTO> posts = user.getPosts();
+      for (PostDTO post : posts) {
+          if (post.getGroup() == null) resultList.add(post);
+      }
+      user.setPosts(resultList);
+
+      return user;
+  }
+        throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+
     }
 
     public void deleteUser(Integer id) {

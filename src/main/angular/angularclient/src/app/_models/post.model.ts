@@ -1,7 +1,5 @@
 import { Image } from "./image.model";
 import { Comment } from "./comment.model";
-import { User } from "./user/user.model";
-import { Group } from "./group.model";
 import { UserWithName } from "./user/user-with-name.model";
 
 export interface Post {
@@ -12,4 +10,11 @@ export interface Post {
     // group:Group;
     likers: UserWithName[];
     comments: Comment[];
+    created:Date;
+}
+
+export interface NewPost {
+    groupId: string;
+    content: string;
+    file?: any;
 }

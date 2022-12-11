@@ -1,8 +1,6 @@
 package com.example.postuser.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,14 +27,14 @@ public class Group {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "users_groups",
+            name = "members",
             joinColumns = {@JoinColumn(name = "group_id")},
             inverseJoinColumns = {@JoinColumn(name = "member_id")})
     private List<User> members;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "users_groups",
+            name = "admins",
             joinColumns = {@JoinColumn(name = "group_id")},
             inverseJoinColumns = {@JoinColumn(name = "admin_id")})
     @NonNull

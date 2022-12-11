@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { UserListComponent } from './_components/users/user-list/user-list.component';
 import { LoginComponent } from './_components/login/login.component';
 import { RegisterComponent } from './_components/register/register.component';
 import { ChangePasswordComponent } from './_components/change-password/change-password.component';
@@ -21,12 +20,16 @@ import { GroupService } from './_services/group.service';
 import { CookieService } from 'ngx-cookie-service';
 import { CheckEmailComponent } from './_components/check-email/check-email.component';
 import { CreatePostComponent } from './_components/create-post/create-post.component';
-
+import { ImageComponent } from './_components/image/image.component';
+import { AddCommentComponent } from './_components/add-comment/add-comment.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { EditPostComponent } from './_components/edit-post/edit-post.component';
+import { AddAdminComponent } from './_components/add-admin/add-admin.component';
+import { UserComponent } from './_components/user/user.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    UserListComponent,
     LoginComponent,
     RegisterComponent,
     ChangePasswordComponent,
@@ -38,19 +41,28 @@ import { CreatePostComponent } from './_components/create-post/create-post.compo
     NavBarComponent,
     CommentComponent,
     CheckEmailComponent,
-    CreatePostComponent
+    CreatePostComponent,
+    ImageComponent,
+    AddCommentComponent,
+    EditPostComponent,
+    AddAdminComponent,
+    UserComponent
   ],
   imports: [
+    SweetAlert2Module.forRoot(),
+    SweetAlert2Module,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    NgbModule
   ],
   providers: [
     UserService,
     GroupService,
-    CookieService],
+    CookieService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

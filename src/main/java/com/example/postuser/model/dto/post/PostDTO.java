@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 @Component
 @Getter
@@ -31,5 +32,6 @@ public class PostDTO {
     private GroupDTO group;
     private List<UserWithNameDTO> likers;
     private List<CommentDTO> comments;
+    private LocalDateTime created;
 
 }

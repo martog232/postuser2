@@ -4,12 +4,15 @@ import com.example.postuser.model.dto.user.RegisterRequestUserDTO;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "users")
 public class User {
@@ -21,15 +24,18 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Post> posts;
 
     @ManyToMany(mappedBy = "followings", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<User> followers;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_relations",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "following_id")})
+    @ToString.Exclude
     private List<User> followings;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -37,6 +43,7 @@ public class User {
             name = "users_like_posts",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "post_id")})
+    @ToString.Exclude
     private List<Post> likedPosts;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -45,6 +52,7 @@ public class User {
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "comment_id")}
     )
+    @ToString.Exclude
     private List<Comment> likedComments;
 
     @ManyToMany(mappedBy = "members")
@@ -82,4 +90,5 @@ public class User {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

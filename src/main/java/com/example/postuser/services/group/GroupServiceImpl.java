@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +64,11 @@ public class GroupServiceImpl implements GroupService {
                     return new ResponseEntity<>(groupDTO.get(), HttpStatus.OK);
                 }
             }
-            return new ResponseEntity<>(mapToNotJoinedGroupDTO(groupDTO.get()), HttpStatus.OK);
+            GroupDTO notJoinedGroup = groupDTO.get();
+            notJoinedGroup.setPosts(new ArrayList<>());
+            return new ResponseEntity<>(notJoinedGroup, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Group not found",HttpStatus.NOT_FOUND);
     }
 
     public Optional<GroupDTO> findById(Integer id) {
@@ -103,10 +106,13 @@ public class GroupServiceImpl implements GroupService {
             List<User> admins = group.getAdmins();
             User user = userService.getUserById(loggedUserId).get();
             if (members.contains(user)) {
-                if (admins.contains(user) && admins.size() == 1) {
-                    return new ResponseEntity<>("first add admin", HttpStatus.METHOD_NOT_ALLOWED);
-                } else {
-                    admins.remove(user);
+                if (admins.contains(user)) {
+                    if (admins.size() == 1)
+                        return new ResponseEntity<>("first add admin", HttpStatus.METHOD_NOT_ALLOWED);
+                    else {
+                        admins.remove(user);
+                        group.setAdmins(admins);
+                    }
                 }
                 members.remove(user);
             } else members.add(user);
@@ -176,9 +182,10 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public ResponseEntity<?> addGroupMember(Integer groupId, Integer newAdminId, int loggedUser) {
+    @Transactional
+    public ResponseEntity<?> addGroupMember(Integer groupId, String newAdminUsername, int loggedUser) {
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        Optional<User> newOptionalAdmin = userService.getUserById(newAdminId);
+        Optional<User> newOptionalAdmin = userService.getUserByUserName(newAdminUsername);
         if (optionalGroup.isPresent()) {
             Group group = optionalGroup.get();
             List<User> admins = group.getAdmins();
@@ -192,8 +199,10 @@ public class GroupServiceImpl implements GroupService {
             if (!isAdmin) return new ResponseEntity<>("you are not member in group " + group.getName() +
                     " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
             if (newOptionalAdmin.isPresent()) {
-                admins.add(newOptionalAdmin.get());
+                if(admins.contains(newOptionalAdmin.get())) admins.remove(newOptionalAdmin.get());
+                else admins.add(newOptionalAdmin.get());
                 group.setAdmins(admins);
+                groupRepository.saveAndFlush(group);
                 return new ResponseEntity<>(findById(groupId).get(), HttpStatus.OK);
             } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
 

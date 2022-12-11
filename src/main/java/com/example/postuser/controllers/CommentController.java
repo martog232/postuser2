@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +29,10 @@ public class CommentController {
     @Transactional
     @Modifying
     @DeleteMapping(value = "/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Integer commentId, HttpSession ses) throws AuthenticationException {
-        return commentService.deleteComment(commentId, sessionManager.getLoggedUser(ses));
+    public ResponseEntity<?> deleteComment(@PathVariable Integer commentId, HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
+        if (loggedUserId == null) return commentService.deleteComment(commentId, sessionManager.getLoggedUser(ses));
+        else return commentService.deleteComment(commentId, loggedUserId);
+
     }
 
     @GetMapping(value = "/{id}")
@@ -39,16 +40,16 @@ public class CommentController {
         return commentService.findById(commentId);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses) throws Exception {
-
-        return postService.likeAndUnlikeComment(id, sessionManager.getLoggedUser(ses));
+    @PostMapping(value = "/{id}/like")
+    public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
+        if (loggedUserId == null) return postService.likeAndUnlikeComment(id, sessionManager.getLoggedUser(ses));
+        else return postService.likeAndUnlikeComment(id, loggedUserId);
     }
 
     @PostMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestParam String content, HttpSession ses) throws AuthenticationException {
-
-        return postService.addComment(id, content, sessionManager.getLoggedUser(ses));
+    public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestParam String content, HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
+        if (loggedUserId == null) return postService.addComment(id, content, sessionManager.getLoggedUser(ses));
+        else return postService.addComment(id, content, loggedUserId);
     }
 }

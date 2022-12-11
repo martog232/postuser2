@@ -10,14 +10,16 @@ import { GroupComponent } from './_components/group/group.component';
 import { LoginComponent } from './_components/login/login.component';
 import { PageNotFoundComponent } from './_components/page-not-found/page-not-found.component';
 import { RegisterComponent } from './_components/register/register.component';
+import { UserComponent } from './_components/user/user.component';
 
 const routes: Routes = [
   { path: 'sign-in',title:'Sign in', component:LoginComponent},
   { path: 'sign-up',title:'Sign up', component:RegisterComponent},
   { path: 'forgot-pass',title:'Forgot password', component:ForgotPassComponent},
   { path: 'reset-pass/:token',title:'Change password', component:ChangePasswordComponent},
-  { path: 'groups/:id', component:GroupComponent},
-  { path: 'check-email',component:CheckEmailComponent},
+  { path: 'groups/:id',title:'Pokazgram', component:GroupComponent},
+  { path: 'users/:username',title:':username', component:UserComponent},
+  { path: 'check-email',title:'Check Email',component:CheckEmailComponent},
   { path: '**',title:'Page Not Found', component:PageNotFoundComponent}
 ];
 

@@ -1,0 +1,38 @@
+<nav class="navbar sticky-top m-0 navbar-light" style="background-color: #83002e;">
+    <img src="../../../assets/big-logo.png" class="img-fluid float-left col-md-1">
+    <a class="navbar-brand text-white h1 col-md-10">PokazGram</a>
+    <button class="btn btn-danger">Log out</button>
+</nav>
+<section class="" style="background-color: #F50057;">
+    <div class="container h-100">
+        <h1>{{emptyUser.username}}</h1>
+        <div class="d-flex justify-content-evenly">
+            <button class="btn btn-primary">Create Post</button>
+            <div class="d-inline-block" ngbDropdown #myDropMember="ngbDropdown">
+                <button type="button" class="btn btn-primary me-2" id="dropdownManualFollowers" ngbDropdownAnchor
+                    (focus)="myDropMember.open()"><i class="bi bi-people-fill"></i>
+                    followers : {{emptyUser.followers.length}}</button>
+                <div ngbDropdownMenu aria-labelledby="dropdownManual">
+                    <a *ngFor="let follower of emptyUser.followers" ngbDropdownItem href="/users/{{follower.username}}">{{follower.username}}</a>
+                </div>
+            </div>
+            <div class="d-inline-block" ngbDropdown #myDropMember2="ngbDropdown">
+                <button type="button" class="btn btn-primary me-2" id="dropdownManualFollowings" ngbDropdownAnchor
+                    (focus)="myDropMember2.open()"><i class="bi bi-people-fill"></i>
+                    followings : {{emptyUser.followings.length}}</button>
+                <div ngbDropdownMenu aria-labelledby="dropdownManual">
+                    <a *ngFor="let following of emptyUser.followings" ngbDropdownItem href="/users/{{following.username}}">{{following.username}}</a>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary">
+                Follow/Unfollow
+            </button>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center h-100" *ngIf="emptyUser.posts">
+            <div class="d-flex justify-content-center mt-3" *ngFor="let post of emptyUser.posts">
+                <app-post [post]="post"></app-post>
+            </div>
+
+        </div>
+    </div>
+</section>

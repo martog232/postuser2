@@ -15,12 +15,11 @@ export class NavBarComponent implements OnInit {
   }
 
   onSignOutUser(): void {
-    this.userService.logout().subscribe(
-      () => {
-        console.log('martodge');
-        this.router.navigate(['/sign-in']);
-      }
-    )
+    localStorage.setItem('logged user',null);
+    localStorage.setItem('loggedId',null);
+  this.router.navigate(['/sign-in']);
+      
+    
   }
 
 }

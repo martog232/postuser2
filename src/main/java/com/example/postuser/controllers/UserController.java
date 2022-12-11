@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -24,11 +23,10 @@ public class UserController {
     private SessionManager sessionManager;
 
 
-    @PostMapping("/sign-up")
+    @PostMapping(value="/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
-    public String register(@RequestBody RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
-
-        return userService.register(userDTO);
+    public void register(@RequestBody RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
+        userService.register(userDTO);
     }
 
     @GetMapping("/confirm")
@@ -37,10 +35,10 @@ public class UserController {
     }
 
     @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public String login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
         UserWithNameDTO responseDTO = userService.login(loginDTO);
         sessionManager.loginUser(ses, responseDTO.getId());
-        return ses.getId();
+        return new ResponseEntity<>(responseDTO,HttpStatus.OK);
     }
 
     @PostMapping(value = "/sign-out")
@@ -48,8 +46,8 @@ public class UserController {
         sessionManager.logoutUser(ses);
     }
 
-    @GetMapping(value = "forgot-pass/{email}")
-    public void forgotPass(@PathVariable String email) throws NoSuchAlgorithmException {
+    @GetMapping(value = "/forgot-pass")
+    public void forgotPass(@RequestParam String email) throws NoSuchAlgorithmException {
         userService.sendEmailWhenForgotPass(email);
     }
 
@@ -64,9 +62,14 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @GetMapping(value = ControllerConfig.USERS_URL + "/{id}")
-    public Optional<UserWithoutPassDTO> findById(@PathVariable Integer id) {
-        return userService.getUserWithoutPassDTOById(id);
+//    @GetMapping(value = ControllerConfig.USERS_URL + "/{id}")
+//    public Optional<UserWithoutPassDTO> findById(@PathVariable Integer id) {
+//        return userService.getUserWithoutPassDTOById(id);
+//    }
+
+    @GetMapping(value = ControllerConfig.USERS_URL + "/{username}")
+    public UserWithoutPassDTO findByUsername(@PathVariable String username) {
+        return userService.getUserDTOByUserName(username);
     }
 
     @DeleteMapping(value = ControllerConfig.USERS_URL + "/{id}")

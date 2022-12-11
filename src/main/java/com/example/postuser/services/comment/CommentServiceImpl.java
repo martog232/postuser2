@@ -55,6 +55,12 @@ public class CommentServiceImpl implements CommentService {
                 new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
 
+    @Override
+    public Optional<Comment> getCommentById(Integer commentId){
+       return Optional.ofNullable(commentRepository.findById(commentId).orElseThrow(() ->
+                new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
+    }
+
     public ResponseEntity<?> getAllByPostId(Integer postId) {
         return new ResponseEntity<>(commentRepository.getAllByPostId(postId).stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK);
     }
@@ -73,6 +79,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteAllByPost(Integer id) {
         commentRepository.deleteAllByPost(id);
+    }
+
+    @Override
+    public void save(Comment comment) {
+        commentRepository.save(comment);
     }
 
 }
