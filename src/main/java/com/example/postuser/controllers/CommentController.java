@@ -41,15 +41,14 @@ public class CommentController {
     }
 
     @PostMapping(value = "/{id}/like")
-    public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
-        if (loggedUserId == null) return postService.likeAndUnlikeComment(id, sessionManager.getLoggedUser(ses));
-        else return postService.likeAndUnlikeComment(id, loggedUserId);
+    public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses) throws AuthenticationException {
+        return postService.likeAndUnlikeComment(id, sessionManager.getLoggedUser(ses));
+
     }
 
     @PostMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestParam String content, HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
-        if (loggedUserId == null) return postService.addComment(id, content, sessionManager.getLoggedUser(ses));
-        else return postService.addComment(id, content, loggedUserId);
+    public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestParam String content, HttpSession ses) throws AuthenticationException {
+        return postService.addComment(id, content, sessionManager.getLoggedUser(ses));
     }
 }

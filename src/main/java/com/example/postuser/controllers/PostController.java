@@ -47,44 +47,33 @@ public class PostController {
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(@RequestParam String content, @ModelAttribute List<MultipartFile> photoList,
-                                    HttpSession ses, @Nullable @RequestParam(required = false) Integer groupId,
-                                    @RequestParam(required = false) Integer loggedUserId)
+                                    HttpSession ses, @Nullable @RequestParam(required = false) Integer groupId)
             throws AuthenticationException, IOException {
 
-        if (loggedUserId == null)
             return postService.create(content, photoList, sessionManager.getLoggedUser(ses), groupId);
-        else return postService.create(content, photoList, loggedUserId, groupId);
     }
 
     @PostMapping(value = "/{id}/like")
-    public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses,
-                                           @RequestParam(required = false) Integer loggedUserId)
+    public ResponseEntity<?> likeAndUnlike(@PathVariable(name = "id") Integer id, HttpSession ses)
             throws AuthenticationException {
 
-        if (loggedUserId == null) {
             return   postService.likeAndUnlike(id, sessionManager.getLoggedUser(ses));
-        }
-
-        return  postService.likeAndUnlike(id, loggedUserId);
-
     }
 
     @PostMapping(value = "/{id}/edit")
-    public ResponseEntity<?> editPost(@PathVariable(name = "id") Integer id, @RequestParam String content, HttpSession ses,
-                                      @RequestParam(required = false) Integer loggedUserId)
+    public ResponseEntity<?> editPost(@PathVariable(name = "id") Integer id, @RequestParam String content, HttpSession ses)
             throws AuthenticationException {
 
-        if (loggedUserId == null) return postService.editPost(id, content, sessionManager.getLoggedUser(ses));
-        else return postService.editPost(id, content, loggedUserId);
+        return postService.editPost(id, content, sessionManager.getLoggedUser(ses));
+
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Integer id, HttpSession ses,
-                                        @RequestParam(required = false) Integer loggedUserId)
+    public ResponseEntity<?> deletePost(@PathVariable Integer id, HttpSession ses)
             throws AuthenticationException, AccessException {
 
-        if (loggedUserId == null) return postService.deletePost(id, sessionManager.getLoggedUser(ses));
-        else return postService.deletePost(id, loggedUserId);
+       return postService.deletePost(id, sessionManager.getLoggedUser(ses));
+
     }
 
 
