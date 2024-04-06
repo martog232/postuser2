@@ -1,12 +1,8 @@
-<nav class="navbar sticky-top m-0 navbar-light" style="background-color: #83002e;">
-    <img src="../../../assets/big-logo.png" class="img-fluid float-left col-md-1">
-    <a class="navbar-brand text-white h1 col-md-10">PokazGram</a>
-    <button class="btn btn-danger">Log out</button>
-</nav>
-<section class="" style="background-color: #F50057;">
-    <div class="container h-100">
-        <h1>{{emptyGroup.name}}</h1>
-        <h3>{{emptyGroup.description}}</h3>
+<app-nav-bar></app-nav-bar>
+<section class="min-vh-100" style="background-color: #192734;">
+    <div class="container ">
+        <h1 class=" text-white text-center">{{emptyGroup.name}}</h1>
+        <h3 class=" text-white text-center">{{emptyGroup.description}}</h3>
         <div class="d-flex justify-content-evenly">
             <button id="openCreatePostModal{{emptyGroup.id}}" class="btn btn-primary" mat-button
                 (click)="openCreatePostModal()">Create
@@ -17,7 +13,7 @@
                     members : {{emptyGroup.members.length}}</button>
                 <div ngbDropdownMenu aria-labelledby="dropdownManual">
                     <a *ngFor="let member of emptyGroup.members" ngbDropdownItem href="/users/{{member.username}}">{{member.username}}</a>
-                    <button class="btn-outline-success" (click)="addMember(emptyGroup.admins)">Add Member</button>
+                    <button class="btn btn-outline-success" (click)="addMember(emptyGroup.admins)">Add Member</button>
                 </div>
             </div>
             <div class="d-inline-block" ngbDropdown #myDropAdmin="ngbDropdown">
@@ -26,14 +22,14 @@
                     admins : {{emptyGroup.admins.length}}</button>
                 <div ngbDropdownMenu aria-labelledby="dropdownManual">
                     <a *ngFor="let admin of emptyGroup.admins" ngbDropdownItem href="/users/{{admin.username}}">{{admin.username}}</a>
-                    <button class="btn-outline-success" (click)="addAdmin(emptyGroup.admins)">Add Admin</button>
+                    <button class="btn btn-outline-success" (click)="addAdmin(emptyGroup.admins)">Add Admin</button>
                 </div>
             </div>
             <button type="button" class="btn btn-primary" (click)="onJoinLeave(emptyGroup.id)">
                 Join/Leave
             </button>
         </div>
-        <div class="row d-flex justify-content-center align-items-center h-100" *ngIf="emptyGroup.posts">
+        <div class="row d-flex justify-content-center" *ngIf="emptyGroup.posts">
             <div class="d-flex justify-content-center mt-3" *ngFor="let post of emptyGroup.posts">
                 <app-post [post]="post"></app-post>
             </div>

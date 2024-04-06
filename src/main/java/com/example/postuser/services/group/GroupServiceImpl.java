@@ -36,6 +36,21 @@ public class GroupServiceImpl implements GroupService {
         return groupRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public List<GroupDTO> getAllNotJoinedGroups(int loggedUserId) {
+        List<GroupDTO> allGroups = groupRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+        List<GroupDTO> allJoinedGroups = getAllJoinedGroups(loggedUserId);
+        for (GroupDTO joinedGroup : allJoinedGroups) {
+            allGroups.removeIf(group -> joinedGroup.getId().equals(group.getId()));
+        }
+        return allGroups;
+    }
+
+    @Override
+    public List<GroupDTO> getAllJoinedGroups(int loggedUserId) {
+        return userService.getUserWithoutPassDTOById(loggedUserId).get().getGroupMember();
+    }
+
     public List<Object> findByName(String name, int loggedUserId) {
         List<GroupDTO> groupDTOS = groupRepository.findGroupsByName(name).stream().map(this::mapToDTO).collect(Collectors.toList());
         UserWithoutPassDTO user = userService.getUserWithoutPassDTOById(loggedUserId).get();
@@ -68,7 +83,7 @@ public class GroupServiceImpl implements GroupService {
             notJoinedGroup.setPosts(new ArrayList<>());
             return new ResponseEntity<>(notJoinedGroup, HttpStatus.OK);
         }
-        return new ResponseEntity<>("Group not found",HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Group not found", HttpStatus.NOT_FOUND);
     }
 
     public Optional<GroupDTO> findById(Integer id) {
@@ -199,7 +214,7 @@ public class GroupServiceImpl implements GroupService {
             if (!isAdmin) return new ResponseEntity<>("you are not member in group " + group.getName() +
                     " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
             if (newOptionalAdmin.isPresent()) {
-                if(admins.contains(newOptionalAdmin.get())) admins.remove(newOptionalAdmin.get());
+                if (admins.contains(newOptionalAdmin.get())) admins.remove(newOptionalAdmin.get());
                 else admins.add(newOptionalAdmin.get());
                 group.setAdmins(admins);
                 groupRepository.saveAndFlush(group);

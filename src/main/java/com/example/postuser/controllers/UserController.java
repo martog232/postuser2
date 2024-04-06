@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
@@ -25,8 +26,13 @@ public class UserController {
 
     @PostMapping(value="/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(@RequestBody RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
-        userService.register(userDTO);
+    public ResponseEntity<HttpStatus> register(@RequestBody RegisterRequestUserDTO userDTO) throws NoSuchAlgorithmException {
+       String serviceResult = userService.register(userDTO);
+       HttpStatus status = HttpStatus.valueOf(200);
+        if ("1".equals(serviceResult)) {
+            status = HttpStatus.valueOf(409);
+        }
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/confirm")
@@ -36,9 +42,11 @@ public class UserController {
 
     @PostMapping(value = "/sign-in", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> login(@RequestBody UserLoginDTO loginDTO, HttpSession ses) throws NoSuchAlgorithmException {
-        UserWithNameDTO responseDTO = userService.login(loginDTO);
-        sessionManager.loginUser(ses, responseDTO.getId());
-        return new ResponseEntity<>(responseDTO,HttpStatus.OK);
+        ResponseEntity<UserWithNameDTO> response = userService.login(loginDTO);
+        if(response.getBody()!=null) {
+            sessionManager.loginUser(ses, Objects.requireNonNull(userService.login(loginDTO).getBody()).getId());
+        }
+        return response;
     }
 
     @PostMapping(value = "/sign-out")
@@ -61,11 +69,6 @@ public class UserController {
 
         return userService.getAllUsers();
     }
-
-//    @GetMapping(value = ControllerConfig.USERS_URL + "/{id}")
-//    public Optional<UserWithoutPassDTO> findById(@PathVariable Integer id) {
-//        return userService.getUserWithoutPassDTOById(id);
-//    }
 
     @GetMapping(value = ControllerConfig.USERS_URL + "/{username}")
     public UserWithoutPassDTO findByUsername(@PathVariable String username) {

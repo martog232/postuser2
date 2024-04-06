@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ChangePasswordComponent } from './_components/change-password/change-password.component';
 import { CheckEmailComponent } from './_components/check-email/check-email.component';
 import { ForgotPassComponent } from './_components/forgot-pass/forgot-pass.component';
+import { GroupListComponent } from './_components/group-list/group-list.component';
 import { GroupComponent } from './_components/group/group.component';
 import { LoginComponent } from './_components/login/login.component';
 import { PageNotFoundComponent } from './_components/page-not-found/page-not-found.component';
@@ -18,7 +19,8 @@ const routes: Routes = [
   { path: 'forgot-pass',title:'Forgot password', component:ForgotPassComponent},
   { path: 'reset-pass/:token',title:'Change password', component:ChangePasswordComponent},
   { path: 'groups/:id',title:'Pokazgram', component:GroupComponent},
-  { path: 'users/:username',title:':username', component:UserComponent},
+  { path: 'groups',title:'All Groups',component:GroupListComponent},
+  { path: 'users/:username', component:UserComponent},
   { path: 'check-email',title:'Check Email',component:CheckEmailComponent},
   { path: '**',title:'Page Not Found', component:PageNotFoundComponent}
 ];

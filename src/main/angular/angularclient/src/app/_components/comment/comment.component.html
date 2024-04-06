@@ -1,11 +1,21 @@
 <div class="form-inline m-3">
-    <div class="col-md-12 form-inline text-black"
-        style="border-radius: 5px; background-color: blanchedalmond;">
-        <div class="col-md-11">
-            <h5 class="">{{comment.owner.username}} :</h5>
-            <p>{{comment.content}}</p>
+    <div class="col-md-12 p-2 text-black" style="border-radius: 5px; background-color: blanchedalmond;">
+        <div class="col-md-12 form-inline">
+            <div class="col-md-11">
+                <h5 class="">{{comment.owner.username}} :</h5>
+                <p class="m-0">{{comment.content}}</p>
+            </div>
+            <div class="d-inline-block" ngbDropdown #myDropOptions="ngbDropdown">
+                <button type="button" class="btn me-2" id="dropdownManual" ngbDropdownAnchor
+                    (focus)="myDropOptions.open()"></button>
+                <div ngbDropdownMenu aria-labelledby="dropdownManual">
+                    <!-- <button class="btn btn-danger m-1 w-75" (click)="deleteComment(comment.id,comment.owner.username)"><i class="bi bi-trash"></i>Delete</button> -->
+                    <button class="btn btn-primary m-1 w-75" (click)="openEditCommentModal(comment.owner.username)"><i class="bi bi-pen"></i>Edit</button>
+                </div>
+            </div>
         </div>
-        <button type="button" (click)="likeUnlikeComment(comment.id)" value="{{comment.id}}" id="comment{{comment.id}}" class="btn col-md-1"><i class="bi bi-heart-fill"></i>
+        <button type="button" (click)="likeUnlikeComment(comment.id)" value="{{comment.id}}" id="comment{{comment.id}}"
+            class="btn col-md-2 text-left pl-3"><i class="bi bi-heart-fill"></i>
             {{comment.likers.length}}
         </button>
     </div>

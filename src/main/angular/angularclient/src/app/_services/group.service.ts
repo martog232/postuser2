@@ -11,6 +11,7 @@ import { Group } from '../_models/group.model';
 export class GroupService {
 
 
+
   private apiServerUrl = environment.apiBaseUrl;
   params = new HttpParams();
   constructor(private http: HttpClient, private cookieService: CookieService) {
@@ -23,8 +24,19 @@ export class GroupService {
     return this.http.get<Group>(this.apiServerUrl + 'groups/' + id +'?loggedUserId=' + localStorage.getItem('loggedId'));
   }
 
-  public getGroupList(name: string): Observable<Group[]> {
+  public getGroupListByName(name: string): Observable<Group[]> {
     return this.http.get<Group[]>(this.apiServerUrl + 'groups/search/');
+  }
+
+  // public getGroupList(): Observable<Group[]> {
+  //   return this.http.get<Group[]>(this.apiServerUrl + 'groups' +'?loggedUserId=' + localStorage.getItem('loggedId'));
+  // }
+  
+  getNotJoinedGroupList() {
+    return this.http.get<Group[]>(this.apiServerUrl + 'groups/not-joined' +'?loggedUserId=' + localStorage.getItem('loggedId'));
+  }
+  getJoinedGroupList() {
+    return this.http.get<Group[]>(this.apiServerUrl + 'groups/joined' +'?loggedUserId=' + localStorage.getItem('loggedId'));
   }
 
   public joinLeave(id:number){
@@ -38,6 +50,15 @@ export class GroupService {
     formData.append('newAdminUserName', newAdminUserName);
     formData.append('loggedUserId', localStorage.getItem('loggedId'));
     return this.http.post<Group>(this.apiServerUrl + 'groups/' + groupId + '/add-admin',formData);
+  }
+
+  public createGroup(name: string,description:string) {
+    
+    const formData = new FormData();
+    formData.append('name', name); 
+    formData.append('description', description);
+    formData.append('loggedUserId', localStorage.getItem('loggedId'));
+    return this.http.post<Group>(this.apiServerUrl + 'groups/create-group', formData);
   }
 
   errorhandler(error: HttpErrorResponse) {

@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 // @ts-ignore
 import { User } from '../_models/user.model';
 import { UserLoginDTO } from '../_models/user/login-user.model';
-import { RegisterRequestUserDTO } from '../_models/user/register-user.mode';
+import { RegisterRequestUserDTO } from '../_models/user/register-user.model';
 import { ChangePassDTO } from '../_models/user/change-pass.model';
 
 @Injectable({
@@ -36,8 +36,7 @@ export class UserService {
   }
 
   public logout() {
-    
-    return this.http.get(this.logoutUrl)
+    return this.http.get(this.logoutUrl);
   }
 
   public register(registerDTO: RegisterRequestUserDTO) {

@@ -13,6 +13,10 @@ public interface GroupService {
 
     List<GroupDTO> getAllGroups(int loggedUserId);
 
+    List<GroupDTO> getAllNotJoinedGroups(int loggedUserId);
+
+    List<GroupDTO> getAllJoinedGroups(int loggedUserId);
+
     ResponseEntity<?> findById(Integer id,int loggedUserId);
 
     Optional<GroupDTO> findById(Integer id);

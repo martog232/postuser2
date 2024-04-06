@@ -1,15 +1,10 @@
 <nav class="navbar sticky-top m-0 navbar-light" style="background-color: #83002e;">
-    <div>
-        <img src="../../../assets/big-logo.png" class=" float-left col-md-1">
-        <a class="navbar-brand text-white h1 col-md-10">PokazGram</a>
-        <div class="container-fluid">
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-          </div>
-        <button class="btn btn-danger">
-            <i class="bi bi-door"></i>
-            (click)="onSignOutUser()">Log out</button>
+    
+      <img src="../../../assets/big-logo.png" class="img-responsive float-left col-md-1">
+      <div class="col-md-9">
+      <h1 class="text-white h1">Pokazgram</h1>
     </div>
+      <button class="btn btn-primary" (click)="onGetAllGroups()">All Groups</button>
+      <button class="btn btn-danger" (click)="onSignOutUser()">Log out</button>
+  
 </nav>

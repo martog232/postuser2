@@ -5,6 +5,7 @@ import com.example.postuser.exceptions.EntityNotFoundException;
 import com.example.postuser.model.dto.comment.CommentDTO;
 import com.example.postuser.model.dto.post.PostDTO;
 import com.example.postuser.model.entities.Comment;
+import com.example.postuser.model.entities.User;
 import com.example.postuser.model.repositories.CommentRepository;
 import com.example.postuser.services.user.UserService;
 import lombok.AllArgsConstructor;
@@ -15,9 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -56,13 +57,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Optional<Comment> getCommentById(Integer commentId){
-       return Optional.ofNullable(commentRepository.findById(commentId).orElseThrow(() ->
+    public Optional<Comment> getCommentById(Integer commentId) {
+        return Optional.ofNullable(commentRepository.findById(commentId).orElseThrow(() ->
                 new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
-    }
-
-    public ResponseEntity<?> getAllByPostId(Integer postId) {
-        return new ResponseEntity<>(commentRepository.getAllByPostId(postId).stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @Override
@@ -76,9 +73,40 @@ public class CommentServiceImpl implements CommentService {
         return createdComment;
     }
 
+
     @Override
     public void deleteAllByPost(Integer id) {
         commentRepository.deleteAllByPost(id);
+    }
+
+    @Override
+    public ResponseEntity<?> editComment(Integer commentId, String content, int loggedUserId) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+            if (comment.getOwner().getId().equals(loggedUserId)) {
+                if (comment.getPost().getGroup() != null) {
+                    boolean isMember = false;
+                    List<User> groupMembers = comment.getPost().getGroup().getMembers();
+                    for (User u : groupMembers) {
+                        if (u.getId().equals(loggedUserId)) {
+                            isMember = true;
+                            break;
+                        }
+                    }
+                    if (!isMember)
+                        return new ResponseEntity<>("you are not member in group " + comment.getPost().getGroup().getName() +
+                                " ! First join it", HttpStatus.METHOD_NOT_ALLOWED);
+                }
+                comment.setContent(content);
+                commentRepository.save(comment);
+                return new ResponseEntity<>(mapToDTO(comment), HttpStatus.OK);
+            }
+            return new ResponseEntity<>("You cannot edit other user's posts", HttpStatus.FORBIDDEN);
+
+        } else throw new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription());
+
+
     }
 
     @Override

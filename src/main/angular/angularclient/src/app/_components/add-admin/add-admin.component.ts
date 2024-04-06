@@ -18,7 +18,6 @@ export class AddAdminComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal, private postService: PostService, private groupService: GroupService) { }
 
   ngOnInit(): void {
-    console.log(this.groupId)
   }
 
   closeModal() {

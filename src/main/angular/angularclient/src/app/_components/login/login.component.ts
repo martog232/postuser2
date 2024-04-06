@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserLoginDTO } from 'src/app/_models/user/login-user.model';
 import { UserService } from 'src/app/_services/user.service';
-import { Observable, Subscription } from 'rxjs';
+import swal from 'sweetalert2'
 
 @Component({
   selector: 'app-login',
@@ -11,29 +11,57 @@ import { Observable, Subscription } from 'rxjs';
 })
 export class LoginComponent implements OnInit {
 
-  emptyLogin : UserLoginDTO = {
+  emptyLogin: UserLoginDTO = {
     username: '',
     password: ''
   }
 
 
-  constructor(private userService: UserService,public router: Router) { }
+  constructor(private userService: UserService, public router: Router) { }
 
   ngOnInit(): void {
-   
+
   }
 
-        // localStorage.setItem('JSESSIONID', response);
+  checkFilledFields(): boolean {
+    var result = false;
+    if (this.emptyLogin.username
+      && this.emptyLogin.password) result = true;
+    return result;
+  }
+
+  //todo localStorage.setItem('JSESSIONID', response);
 
   onLogUser(): void {
-    this.userService.login(this.emptyLogin).subscribe(
-      (response: any) => {
-        console.log(response);
-        localStorage.setItem('logged user',response.username);
-        localStorage.setItem('loggedId',response.id)
-        this.router.navigate(['/users/',response.username]);
-      }
-    )
+    if (this.checkFilledFields()) {
+      this.userService.login(this.emptyLogin).subscribe(
+        (response: any) => {
+          console.log(response);
+          localStorage.setItem('logged user', response.username);
+          localStorage.setItem('loggedId', response.id)
+          this.router.navigate(['/users/', response.username]);
+        }, (err) => {
+          console.error(err)
+        if(err = '401'){
+          swal.fire({
+            text: 'Email or pass not correct',
+            icon: 'warning',
+            iconColor: 'red',
+            cancelButtonText: 'OK',
+            cancelButtonColor: 'red'
+          }
+          )
+        }}
+      )
+    } else {
+      swal.fire({
+        text: 'Please fill out all required fields.',
+        icon: 'warning',
+        iconColor: 'red',
+        cancelButtonText: 'OK',
+        cancelButtonColor: 'red'
+      })
+    }
   }
 
 }

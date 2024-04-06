@@ -17,7 +17,6 @@ export class CreatePostComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal, private postService: PostService) { }
 
   ngOnInit(): void {
-    console.log(this.groupId)
   }
 
   closeModal() {

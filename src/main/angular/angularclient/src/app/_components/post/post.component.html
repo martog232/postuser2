@@ -1,5 +1,5 @@
 <div *ngIf="post" class="card col-md-7 mx-auto text-black post-container">
-    <div class="card-body p-md-5">
+    <div class="card-body">
         <div class="row justify-content-center">
             <div class="w-100 col-lg-6 col-xl-5 order-2 order-lg-1">
                 <div class="col-md-12 form-inline justify-content-between">
@@ -12,14 +12,14 @@
                         <div class="d-inline-block" ngbDropdown #myDropOptions="ngbDropdown">
                             <button type="button" class="btn btn-primary me-2" id="dropdownManual" ngbDropdownAnchor (focus)="myDropOptions.open()"></button>
                             <div ngbDropdownMenu aria-labelledby="dropdownManual">
-                                <button class="btn btn-danger m-1" (click)="deletePost(post.id,post.owner.username)"><i class="bi bi-trash"></i>Delete</button>
-                                <button class="btn btn-primary m-1" (click)="openEditPostModal(post.owner.username)"><i class="bi bi-pen"></i>Edit</button>
+                                <button class="btn btn-danger m-1 w-75" (click)="deletePost(post.id,post.owner.username)"><i class="bi bi-trash"></i>Delete</button>
+                                <button class="btn btn-primary m-1 w-75" (click)="openEditPostModal(post.owner.username)"><i class="bi bi-pen"></i>Edit</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <p class="h4 w-100  my-2 mt-4">{{post.content}}</p>
+                    <p class="h4 col-md-12">{{post.content}}</p>
                 </div>
                 <div *ngFor="let image of post.imageList">
                     <img [src]="image.url" class="img-fluid" alt="image">

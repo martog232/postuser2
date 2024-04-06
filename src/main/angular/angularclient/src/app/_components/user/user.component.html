@@ -1,11 +1,7 @@
-<nav class="navbar sticky-top m-0 navbar-light" style="background-color: #83002e;">
-    <img src="../../../assets/big-logo.png" class="img-fluid float-left col-md-1">
-    <a class="navbar-brand text-white h1 col-md-10">PokazGram</a>
-    <button class="btn btn-danger">Log out</button>
-</nav>
-<section class="" style="background-color: #F50057;">
-    <div class="container h-100">
-        <h1>{{emptyUser.username}}</h1>
+<app-nav-bar></app-nav-bar>
+<section class="min-vh-100" style="background-color: #192734;">
+    <div class="container min-vh-100">
+        <h1 class="text-white text-center">{{emptyUser.username}}</h1>
         <div class="d-flex justify-content-evenly">
             <button class="btn btn-primary">Create Post</button>
             <div class="d-inline-block" ngbDropdown #myDropMember="ngbDropdown">
@@ -28,7 +24,7 @@
                 Follow/Unfollow
             </button>
         </div>
-        <div class="row d-flex justify-content-center align-items-center h-100" *ngIf="emptyUser.posts">
+        <div class="row d-flex justify-content-center" *ngIf="emptyUser.posts">
             <div class="d-flex justify-content-center mt-3" *ngFor="let post of emptyUser.posts">
                 <app-post [post]="post"></app-post>
             </div>

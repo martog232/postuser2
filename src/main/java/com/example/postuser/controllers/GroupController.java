@@ -19,12 +19,28 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(ControllerConfig.GROUPS_URL)
 public class GroupController {
-
     private final GroupService groupService;
-
     private final SessionManager sessionManager;
 
-    @PostMapping()
+    @GetMapping()
+    public List<GroupDTO> getAllGroups(HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
+        if (loggedUserId == null) return groupService.getAllGroups(sessionManager.getLoggedUser(ses));
+        else return groupService.getAllGroups(loggedUserId);
+    }
+
+    @GetMapping("/not-joined")
+    public List<GroupDTO> getAllNotJoinedGroups(HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
+        if (loggedUserId == null) return groupService.getAllNotJoinedGroups(sessionManager.getLoggedUser(ses));
+        else return groupService.getAllNotJoinedGroups(loggedUserId);
+    }
+
+    @GetMapping("/joined")
+    public List<GroupDTO> getAllJoinedGroups(HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
+        if (loggedUserId == null) return groupService.getAllJoinedGroups(sessionManager.getLoggedUser(ses));
+        else return groupService.getAllJoinedGroups(loggedUserId);
+    }
+
+    @PostMapping(value = "/create-group")
     @ResponseStatus(HttpStatus.CREATED)
     public GroupDTO createGroup(@RequestParam String name, @RequestParam String description, HttpSession ses, @RequestParam(required = false) Integer loggedUserId) throws AuthenticationException {
         if (loggedUserId == null) return groupService.create(name,description, sessionManager.getLoggedUser(ses));
@@ -66,6 +82,4 @@ public class GroupController {
         if (loggedUserId == null) return groupService.editGroup(groupId, name, description, sessionManager.getLoggedUser(ses));
         else return groupService.editGroup(groupId, name, description, loggedUserId);
     }
-
-
 }

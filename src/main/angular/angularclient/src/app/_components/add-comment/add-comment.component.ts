@@ -14,8 +14,9 @@ export class AddCommentComponent implements OnInit {
   content: string = '';
 
   @Input() public postId: number | undefined
+  @Input() public groupId: number | undefined
 
-  constructor(private activeModal: NgbActiveModal,private postService: PostService, private groupService: GroupService) { }
+  constructor(private activeModal: NgbActiveModal,private postService: PostService) { }
 
   ngOnInit(): void {
   }
@@ -27,7 +28,7 @@ export class AddCommentComponent implements OnInit {
   onAddComment() {
     this.postService.addComment(this.content, this.postId).subscribe(
       (response) => {
-        this.activeModal.close(this.postId)
+        this.activeModal.close(this.groupId)
       }
     )
   }

@@ -42,7 +42,8 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(userDTO.getEmail()) != null || userRepository.findByUsername(userDTO.getUsername()) != null) {
 
             if (userRepository.getIsConfirmedByEmailOrUsername(userDTO.getEmail(), userDTO.getUsername())) {
-                throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
+//                throw new DuplicateEntityException(APIErrorCode.DUPLICATE_ENTITY.getDescription());
+                return "1";
             }
         }
         if (!(userDTO.getPassword().equals(userDTO.getConfirmPassword()))) {
@@ -124,18 +125,18 @@ public class UserServiceImpl implements UserService {
                 -> new EntityNotFoundException(APIErrorCode.ENTITY_NOT_FOUND.getDescription())));
     }
 
-    public UserWithNameDTO login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException {
+    public ResponseEntity<UserWithNameDTO> login(UserLoginDTO loginDTO) throws NoSuchAlgorithmException {
         User u = userRepository.findByUsername(loginDTO.getUsername());
         if (u != null) {
             if (u.isConfirmed()) {
                 if (passwordTokenEncrypting.encrypting(loginDTO.getPassword())
                         .equals(u.getPassword())) {
                     System.out.println(u.getUsername() + " logged");
-                    return mapToUserWithNameDTO(u);
+                    return new ResponseEntity<>(mapToUserWithNameDTO(u),HttpStatus.OK);
                 }
             }
         }
-        throw new CredentialsNotCorrectException(APIErrorCode.CREDENTIALS_NOT_CORRECT.getDescription());
+        return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
     }
 
     @Transactional

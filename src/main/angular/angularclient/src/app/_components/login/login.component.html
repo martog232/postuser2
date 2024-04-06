@@ -1,9 +1,9 @@
-<section class="vh-100" style="background-color: #F50057;">
+<section class="vh-100" style="background-color: #192734;">
   <div class="container h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-lg-12 col-xl-11">
-        <h1 class="d-flex justify-content-center">Welcome back to PokazGram&nbsp;
-          <h1 class="text-white"> {{emptyLogin.username}}</h1> !
+        <h1 class="d-flex text-white justify-content-center">Welcome back to PokazGram&nbsp;
+          <h1 class="text-white text-decoration-underline m-0"> {{emptyLogin.username}}</h1> !
         </h1>
         <div class="card text-black" style="border-radius: 25px;">
           <div class="card-body p-md-5">
@@ -14,23 +14,40 @@
 
                 <form class="mx-1 mx-md-4">
 
-                  <!-- Email input -->
-                  <div class="d-flex flex-row align-items-center mb-4">
+                  <!-- Username input -->
+                  <div class=" mb-4">
+                  <div class="d-flex flex-row align-items-center ">
                     <i class="bi bi-envelope  fa-lg me-3 fa-fw"></i>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="email" id="username" [(ngModel)]="emptyLogin.username"
-                        class="form-control h4" />
-                      <label class="h5 form-label" for="username">Username</label>
+                      <input type="text" id="username" [(ngModel)]="emptyLogin.username" placeholder="Username"
+                        #username="ngModel" class="form-control h4" />
                     </div>
                   </div>
 
+                  <div *ngIf="username.invalid && (username.dirty || username.touched)"
+                      class="alert pl-4 text-danger text-center py-0 m-0">
+                      <span *ngIf="username.errors?.['required']">
+                        Username is required.
+                      </span>
+                    </div>
+                </div>
+
                   <!-- Password input -->
-                  <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="bi bi-lock fa-lg me-3 fa-fw"></i>
-                    <div class="form-outline flex-fill mb-0">
-                      <input type="password" id="password" [(ngModel)]="emptyLogin.password" class="form-control"
-                        type="password" />
-                      <label class="h5 form-label" for="password">Password</label>
+                  <div class=" mb-4">
+                    <div class="d-flex flex-row align-items-center">
+                      <i class="bi bi-lock fa-lg me-3 fa-fw"></i>
+                      <div class="form-outline flex-fill mb-0">
+                        <input type="password" id="password" [(ngModel)]="emptyLogin.password" #password="ngModel"
+                          required class="form-control" placeholder="Password" type="password" />
+
+                      </div>
+                    </div>
+
+                    <div *ngIf="password.invalid && (password.dirty || password.touched)"
+                      class="alert pl-4 text-danger py-0 m-0  text-center ">
+                      <span *ngIf="password.errors?.['required']">
+                        Field is required.
+                      </span>
                     </div>
                   </div>
 

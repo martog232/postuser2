@@ -52,4 +52,14 @@ public class CommentController {
         if (loggedUserId == null) return postService.addComment(id, content, sessionManager.getLoggedUser(ses));
         else return postService.addComment(id, content, loggedUserId);
     }
+
+    @PostMapping(value = "/{id}/edit")
+    public ResponseEntity<?> editComment(@PathVariable(name = "id") Integer id, @RequestParam String content, HttpSession ses,
+                                      @RequestParam(required = false) Integer loggedUserId)
+            throws AuthenticationException {
+
+        if (loggedUserId == null) return commentService.editComment(id, content, sessionManager.getLoggedUser(ses));
+        else return commentService.editComment(id, content, loggedUserId);
+    }
+
 }

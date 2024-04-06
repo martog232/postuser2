@@ -6,6 +6,7 @@ import { UserWithName } from 'src/app/_models/user/user-with-name.model';
 import { User } from 'src/app/_models/user/user.model';
 import { UserService } from 'src/app/_services/user.service';
 import { environment } from 'src/environments/environment';
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-user',
@@ -29,7 +30,9 @@ export class UserComponent implements OnInit {
 
   userSubscription: Subscription | undefined;
 
-  constructor(private userService: UserService, private route: ActivatedRoute) { }
+  constructor(private userService: UserService, private route: ActivatedRoute, private titleService: Title) {
+    
+  }
 
   ngOnInit(): void {
     this.getUser(this.route.snapshot.paramMap.get('username'));
@@ -49,6 +52,7 @@ export class UserComponent implements OnInit {
         })
         this.emptyUser = data;
         this.loggedUsername = localStorage.getItem('logged user')
+        this.titleService.setTitle(this.emptyUser.username);
       }
     );
   }

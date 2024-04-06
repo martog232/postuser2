@@ -9,7 +9,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreatePostComponent } from '../create-post/create-post.component';
 import { environment } from 'src/environments/environment';
 import { AddAdminComponent } from '../add-admin/add-admin.component';
-import swal from 'sweetalert2'
+import swal from 'sweetalert2';
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-group',
@@ -34,7 +35,8 @@ export class GroupComponent implements OnInit {
 
   groupSubscription: Subscription | undefined;
 
-  constructor(private groupService: GroupService, private route: ActivatedRoute, private modalService: NgbModal) { }
+  constructor(private groupService: GroupService, private route: ActivatedRoute, private modalService: NgbModal,
+    private titleService: Title) { }
 
   ngOnInit(): void {
     this.getGroup(this.route.snapshot.paramMap.get('id'));
@@ -53,7 +55,8 @@ export class GroupComponent implements OnInit {
           }))
         })
         this.emptyGroup = data;
-        this.loggedUsername = localStorage.getItem('logged user')
+        this.loggedUsername = localStorage.getItem('logged user');
+        this.titleService.setTitle(this.emptyGroup.name);
       }
     );
   }

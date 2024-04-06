@@ -22,6 +22,7 @@ public interface CommentService {
     CommentDTO createComment(String content, PostDTO postDTO, Integer loggedUser);
 
     void deleteAllByPost(Integer id);
+    ResponseEntity<?> editComment(Integer postId, String content, int loggedUserId);
 
     void save(Comment comment);
 }

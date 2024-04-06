@@ -26,6 +26,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EditPostComponent } from './_components/edit-post/edit-post.component';
 import { AddAdminComponent } from './_components/add-admin/add-admin.component';
 import { UserComponent } from './_components/user/user.component';
+import { GroupListComponent } from './_components/group-list/group-list.component';
+import { CreateGroupComponent } from './_components/create-group/create-group.component';
+import { EditCommentComponent } from './_components/edit-comment/edit-comment.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +49,10 @@ import { UserComponent } from './_components/user/user.component';
     AddCommentComponent,
     EditPostComponent,
     AddAdminComponent,
-    UserComponent
+    UserComponent,
+    GroupListComponent,
+    CreateGroupComponent,
+    EditCommentComponent
   ],
   imports: [
     SweetAlert2Module.forRoot(),

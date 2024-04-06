@@ -18,8 +18,10 @@ export class NavBarComponent implements OnInit {
     localStorage.setItem('logged user',null);
     localStorage.setItem('loggedId',null);
   this.router.navigate(['/sign-in']);
-      
-    
+  }
+  
+  onGetAllGroups(): void{
+    this.router.navigate(['/groups']);
   }
 
 }
